@@ -18,18 +18,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 If a guide doesn't cover what you need, search `node_modules/next/dist/docs/` before falling back to prior knowledge.
 
-## Commands
-
-```bash
-npm run dev      # next dev (Turbopack, outputs to .next/dev)
-npm run build    # next build (Turbopack by default)
-npm run start    # next start
-npm run lint     # eslint (flat config in eslint.config.mjs)
-npx next typegen # regenerate PageProps/LayoutProps/RouteContext helper types after route changes
-```
-
-There is no test runner configured yet.
-
 ## Project state
 
 This repo is currently the unmodified `create-next-app` scaffold (`app/layout.tsx`, `app/page.tsx`, `app/globals.css`) — the actual Arcade Vault app has not been built yet. Treat `app/page.tsx` and the default metadata/fonts in `app/layout.tsx` as placeholders to replace, not code to preserve.
@@ -58,3 +46,6 @@ What the prototype defines, file by file:
 ## Workflow: Spec Driven Design
 
 Per `README.md`, feature work follows a spec-driven workflow using `/spec` and `/spec-impl` from the `Klerith/fernando-skills` skills package (installed via `npx skills@latest add Klerith/fernando-skills`). Check for these commands/skills before starting a non-trivial feature and follow that workflow rather than jumping straight to implementation.
+
+## Skills
+Usa siempre /frontend-design para diseñar la interfaz de usuario.

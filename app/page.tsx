@@ -1,5 +1,10 @@
-import { Library } from "@/components/library";
+import type { Metadata } from "next";
+import { Home } from "@/components/home";
 
-export default function Home() {
-  return <Library />;
+export const metadata: Metadata = {
+  title: "Arcade Vault · El arcade clásico está de vuelta",
+};
+
+export default function HomePage() {
+  return <Home />;
 }

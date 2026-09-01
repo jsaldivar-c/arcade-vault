@@ -1,6 +1,6 @@
 # SPEC 02 — Home y Acerca de
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-01
 > **Objective:** Implementar como rutas reales de Next.js App Router las pantallas Home (landing en `/`) y Acerca de (`/about`) de Arcade Vault a partir del prototipo en `references/templates/home-about/`, moviendo la Biblioteca de `/` a `/biblioteca` y actualizando la navegación global para incluir los cuatro enlaces principales.

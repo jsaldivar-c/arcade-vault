@@ -1,6 +1,6 @@
 # SPEC 03 — Envío de correo de contacto con Resend
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 02
 > **Date:** 2026-09-01
 > **Objective:** Conectar el formulario de contacto de `/about` a un endpoint real (`app/api/contact/route.ts`) que envíe el mensaje por correo usando Resend, reemplazando la simulación sin red que dejó SPEC 02.
@@ -72,14 +72,14 @@ interface ContactRequestBody {
 
 ## Acceptance criteria
 
-- [ ] `npm run build` completa sin errores de tipos ni de ESLint.
-- [ ] `.env.example` existe (versionado) y documenta `RESEND_API_KEY` y `CONTACT_TO_EMAIL`.
-- [ ] `.env.local` existe localmente (no versionado) con `CONTACT_TO_EMAIL=josedmy@gmail.com`.
-- [ ] Enviar el formulario con campos vacíos sigue disparando `shake`, sin llamar a `/api/contact`.
-- [ ] Enviar el formulario completo dispara una petición `POST` real a `/api/contact` (visible en el Network tab), en vez de resolver localmente como en SPEC 02.
-- [ ] Mientras la petición está en curso, el botón de envío queda deshabilitado y muestra "ENVIANDO...".
-- [ ] Con `RESEND_API_KEY` vacía o inválida, el envío muestra el estado de error visual y conserva los datos ya escritos en el formulario.
-- [ ] Con una `RESEND_API_KEY` válida configurada, enviar el formulario entrega un correo real a `CONTACT_TO_EMAIL` con nombre, correo y mensaje del remitente, y muestra la animación `terminal-success` con el nombre ingresado.
+- [X] `npm run build` completa sin errores de tipos ni de ESLint.
+- [X] `.env.example` existe (versionado) y documenta `RESEND_API_KEY` y `CONTACT_TO_EMAIL`.
+- [X] `.env.local` existe localmente (no versionado) con `CONTACT_TO_EMAIL=josedmy@gmail.com`.
+- [X] Enviar el formulario con campos vacíos sigue disparando `shake`, sin llamar a `/api/contact`.
+- [X] Enviar el formulario completo dispara una petición `POST` real a `/api/contact` (visible en el Network tab), en vez de resolver localmente como en SPEC 02.
+- [X] Mientras la petición está en curso, el botón de envío queda deshabilitado y muestra "ENVIANDO...".
+- [X] Con `RESEND_API_KEY` vacía o inválida, el envío muestra el estado de error visual y conserva los datos ya escritos en el formulario.
+- [X] Con una `RESEND_API_KEY` válida configurada, enviar el formulario entrega un correo real a `CONTACT_TO_EMAIL` con nombre, correo y mensaje del remitente, y muestra la animación `terminal-success` con el nombre ingresado.
 
 ---
 

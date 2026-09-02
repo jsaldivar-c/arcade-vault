@@ -5,6 +5,7 @@
 
 .playwright-screenshots/*
 !.playwright-screenshots/.gitkeep
+
 # dependencies
 /node_modules
 /.pnp
@@ -37,6 +38,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.template
 
 # vercel
 .vercel

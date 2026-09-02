@@ -71,15 +71,39 @@ export function About() {
   const [form, setForm] = useState<ContactFormState>({ name: "", email: "", msg: "" });
   const [sent, setSent] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.msg.trim()) {
       setShake(true);
       setTimeout(() => setShake(false), 400);
       return;
     }
-    setSent(form.name.trim());
+
+    setSending(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { message?: string };
+        setError(data.message ?? "No se pudo enviar el mensaje. Intenta de nuevo.");
+        return;
+      }
+
+      setSent(form.name.trim());
+    } catch {
+      setError("No se pudo enviar el mensaje. Intenta de nuevo.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -170,9 +194,15 @@ export function About() {
                     placeholder="Cuéntanos qué tienes en mente…"
                   />
                 </div>
-                <button className="btn xl press" type="submit" style={{ width: "100%" }}>
-                  ▶ ENVIAR MENSAJE
+                <button
+                  className="btn xl press"
+                  type="submit"
+                  style={{ width: "100%" }}
+                  disabled={sending}
+                >
+                  {sending ? "ENVIANDO..." : "▶ ENVIAR MENSAJE"}
                 </button>
+                {error && <p className="contact-error">{error}</p>}
               </>
             ) : (
               <div className="terminal-success">

@@ -1,6 +1,6 @@
 # SPEC 06 — Leaderboard y catálogo de juegos en Supabase
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 04, SPEC 05
 > **Date:** 2026-09-04
 > **Objective:** Reemplazar el catálogo mock de juegos (`GAMES`) y el leaderboard mock (`seededScores`) por tablas reales `games` y `scores` en Supabase (lectura pública en ambas, inserción pública solo en `scores`, igual de abierto que el modelo de confianza actual de `localStorage`), consumidas desde Server Components en Home/Biblioteca/Detalle/Salón de la Fama, y hacer que `saveScore()` inserte directamente en Supabase en vez de `localStorage`.
@@ -159,18 +159,18 @@ export async function saveScore(
 
 ## Acceptance criteria
 
-- [ ] Las tablas `games` y `scores` existen en Supabase con las columnas y políticas RLS descritas (lectura pública en ambas, inserción pública solo en `scores`), verificable con `mcp__supabase__list_tables`.
-- [ ] `games` contiene los 8 juegos con el mismo contenido (`title`/`short`/`long`/`cat`/`cover`/`color`) que tenía el mock `GAMES` en `lib/data.ts` antes de este spec.
-- [ ] `/`, `/biblioteca` y `/juego/[id]` leen el catálogo desde Supabase (`getGames()`/`getGameWithScores()`), sin importar `GAMES` de `lib/data.ts`.
-- [ ] `/salon` lee todos los juegos y sus puntuaciones desde Supabase (`getAllGamesWithScores()`), sin importar `seededScores`/`GAMES` de `lib/data.ts`.
-- [ ] Guardar una puntuación desde `GamePlayer` (en cualquiera de los 8 juegos) inserta una fila real en la tabla `scores` de Supabase; `localStorage["av_scores"]` ya no se usa.
-- [ ] Esa puntuación guardada aparece, tras recargar, en el leaderboard del Detalle (`/juego/[id]`) y en la tab correspondiente del Salón de la Fama (`/salon`).
-- [ ] `best`/`plays` de un juego en Home/Biblioteca/Detalle reflejan `MAX(score)`/`COUNT(*)` reales de `scores` para ese `game_id`.
-- [ ] Un juego sin ninguna puntuación guardada muestra un estado vacío ("AÚN NO HAY PUNTUACIONES") en el Detalle y en el Salón, no filas de `seededScores`.
-- [ ] "Tu mejor marca" en el Salón solo aparece cuando existe al menos una puntuación real cuyo `player_name` coincide con el nombre de la sesión activa para el juego seleccionado.
-- [ ] `lib/data.ts` ya no exporta `GAMES`, `seededScores` ni `PLAYERS`.
-- [ ] Si la inserción en `scores` falla (por ejemplo, sin conexión), el modal de fin de partida muestra un error en vez de marcar la puntuación como guardada, y el botón permite reintentar.
-- [ ] `npm run build` y `npm run lint` completan sin errores de tipos ni de ESLint.
+- [x] Las tablas `games` y `scores` existen en Supabase con las columnas y políticas RLS descritas (lectura pública en ambas, inserción pública solo en `scores`), verificable con `mcp__supabase__list_tables`.
+- [x] `games` contiene los 8 juegos con el mismo contenido (`title`/`short`/`long`/`cat`/`cover`/`color`) que tenía el mock `GAMES` en `lib/data.ts` antes de este spec.
+- [x] `/`, `/biblioteca` y `/juego/[id]` leen el catálogo desde Supabase (`getGames()`/`getGameWithScores()`), sin importar `GAMES` de `lib/data.ts`.
+- [x] `/salon` lee todos los juegos y sus puntuaciones desde Supabase (`getAllGamesWithScores()`), sin importar `seededScores`/`GAMES` de `lib/data.ts`.
+- [x] Guardar una puntuación desde `GamePlayer` (en cualquiera de los 8 juegos) inserta una fila real en la tabla `scores` de Supabase; `localStorage["av_scores"]` ya no se usa.
+- [x] Esa puntuación guardada aparece, tras recargar, en el leaderboard del Detalle (`/juego/[id]`) y en la tab correspondiente del Salón de la Fama (`/salon`).
+- [x] `best`/`plays` de un juego en Home/Biblioteca/Detalle reflejan `MAX(score)`/`COUNT(*)` reales de `scores` para ese `game_id`.
+- [x] Un juego sin ninguna puntuación guardada muestra un estado vacío ("AÚN NO HAY PUNTUACIONES") en el Detalle y en el Salón, no filas de `seededScores`.
+- [x] "Tu mejor marca" en el Salón solo aparece cuando existe al menos una puntuación real cuyo `player_name` coincide con el nombre de la sesión activa para el juego seleccionado.
+- [x] `lib/data.ts` ya no exporta `GAMES`, `seededScores` ni `PLAYERS`.
+- [x] Si la inserción en `scores` falla (por ejemplo, sin conexión), el modal de fin de partida muestra un error en vez de marcar la puntuación como guardada, y el botón permite reintentar.
+- [x] `npm run build` y `npm run lint` completan sin errores de tipos ni de ESLint.
 
 ---
 

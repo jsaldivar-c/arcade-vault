@@ -1,6 +1,7 @@
 // Datos mock de Arcade Vault — migrado de references/templates/data.jsx
 
-export type CategoryFilter = "TODOS" | "ARCADE" | "PUZZLE" | "SHOOTER" | "VERSUS";
+export type CategoryFilter =
+  "TODOS" | "ARCADE" | "PUZZLE" | "SHOOTER" | "VERSUS";
 export type GameColor = "cyan" | "magenta" | "yellow" | "green";
 
 export interface Game {
@@ -12,7 +13,7 @@ export interface Game {
   cover: string;
   color: GameColor;
   best: number;
-  plays: string;
+  plays: number;
 }
 
 export interface ScoreRow {
@@ -32,7 +33,7 @@ export const GAMES: Game[] = [
     cover: "cover-bricks",
     color: "cyan",
     best: 28450,
-    plays: "12.4K",
+    plays: 12400,
   },
   {
     id: "caida",
@@ -43,7 +44,7 @@ export const GAMES: Game[] = [
     cover: "cover-tetro",
     color: "magenta",
     best: 184220,
-    plays: "31.8K",
+    plays: 31800,
   },
   {
     id: "serpentina",
@@ -54,7 +55,7 @@ export const GAMES: Game[] = [
     cover: "cover-snake",
     color: "green",
     best: 7820,
-    plays: "9.1K",
+    plays: 9100,
   },
   {
     id: "gloton",
@@ -65,7 +66,7 @@ export const GAMES: Game[] = [
     cover: "cover-glot",
     color: "yellow",
     best: 96400,
-    plays: "27.2K",
+    plays: 27200,
   },
   {
     id: "invasores",
@@ -76,7 +77,7 @@ export const GAMES: Game[] = [
     cover: "cover-invaders",
     color: "green",
     best: 54190,
-    plays: "18.0K",
+    plays: 18000,
   },
   {
     id: "rocas",
@@ -87,7 +88,7 @@ export const GAMES: Game[] = [
     cover: "cover-rocas",
     color: "yellow",
     best: 41200,
-    plays: "15.6K",
+    plays: 15600,
   },
   {
     id: "ranaria",
@@ -98,7 +99,7 @@ export const GAMES: Game[] = [
     cover: "cover-rana",
     color: "green",
     best: 18900,
-    plays: "6.4K",
+    plays: 6400,
   },
   {
     id: "duelo-pixel",
@@ -109,16 +110,37 @@ export const GAMES: Game[] = [
     cover: "cover-duelo",
     color: "cyan",
     best: 24,
-    plays: "4.2K",
+    plays: 4200,
   },
 ];
 
-export const CATS: CategoryFilter[] = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"];
+export const CATS: CategoryFilter[] = [
+  "TODOS",
+  "ARCADE",
+  "PUZZLE",
+  "SHOOTER",
+  "VERSUS",
+];
 
 export const PLAYERS: string[] = [
-  "PX_KAI", "NEONFOX", "Z3R0COOL", "M00NRYU", "VAULT_07", "GLITCHA",
-  "ATARI_KID", "CYBER_LU", "MAGENTA88", "SCANLINE", "BIT_LORD", "ARKADYA",
-  "DROID_X", "RGB_QUEEN", "PIXEL_DAD", "RETROVIRA", "VECTORX", "JOY_STK",
+  "PX_KAI",
+  "NEONFOX",
+  "Z3R0COOL",
+  "M00NRYU",
+  "VAULT_07",
+  "GLITCHA",
+  "ATARI_KID",
+  "CYBER_LU",
+  "MAGENTA88",
+  "SCANLINE",
+  "BIT_LORD",
+  "ARKADYA",
+  "DROID_X",
+  "RGB_QUEEN",
+  "PIXEL_DAD",
+  "RETROVIRA",
+  "VECTORX",
+  "JOY_STK",
 ];
 
 export function seededScores(seed: number, count = 12): ScoreRow[] {
@@ -136,7 +158,12 @@ export function seededScores(seed: number, count = 12): ScoreRow[] {
     const score = base - i * Math.floor(2000 + rand() * 4000);
     const day = String(1 + Math.floor(rand() * 28)).padStart(2, "0");
     const mon = String(1 + Math.floor(rand() * 12)).padStart(2, "0");
-    rows.push({ rank: i + 1, name, score: Math.max(score, 1000), date: `${day}/${mon}/2026` });
+    rows.push({
+      rank: i + 1,
+      name,
+      score: Math.max(score, 1000),
+      date: `${day}/${mon}/2026`,
+    });
   }
   return rows
     .sort((a, b) => b.score - a.score)

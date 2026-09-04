@@ -1,6 +1,6 @@
 # SPEC 05 — Primer juego real: ROCAS (Asteroids)
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-03
 > **Objective:** Reemplazar el arena decorativo del Reproductor de ROCAS por el motor real de `references/started-games/02-asteroids` (portado a TypeScript y encapsulado en un contrato reutilizable), integrado con el HUD y el modal de fin de partida ya existentes.

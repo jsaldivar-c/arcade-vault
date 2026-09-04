@@ -67,7 +67,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setOver(true);
   };
   const handleSave = () => {
-    saveScore({ game: game.id, score, name, at: Date.now() });
+    saveScore({ game: game.id, score, name });
     setSaved(true);
   };
 

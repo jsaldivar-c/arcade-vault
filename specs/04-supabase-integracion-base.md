@@ -1,6 +1,6 @@
 # SPEC 04 — Integración base de Supabase
 
-> **Status:** Approved  
+> **Status:** Implemented  
 > **Depends on:** —
 > **Date:** 2026-09-03
 > **Objective:** Integrar el SDK de Supabase en la aplicación Next.js (clientes browser/server, refresco de sesión vía `proxy.ts`, variables de entorno y una ruta de diagnóstico) como base de infraestructura para specs futuros de autenticación real, puntuaciones persistentes, Realtime y Edge Functions, sin implementar todavía ninguna pantalla ni tabla real.
@@ -64,14 +64,14 @@ Este spec no introduce ningún modelo de datos persistido (no hay tablas). Se de
 
 ## Acceptance criteria
 
-- [ ] `package.json` incluye `@supabase/supabase-js` y `@supabase/ssr` como dependencias.
-- [ ] `.env.template` documenta `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; `.env.local` tiene los valores reales del proyecto `gfngxwpnonizcpgjcazf`.
-- [ ] `lib/supabase/client.ts` y `lib/supabase/server.ts` existen, exportan `createClient()`, y `npx tsc --noEmit` no reporta errores.
-- [ ] `proxy.ts` en la raíz existe y usa `updateSession` de `lib/supabase/proxy.ts`; navegar la app en `npm run dev` no produce errores ni excepciones del proxy en consola.
-- [ ] `GET /api/health/supabase` responde `200 { ok: true }` cuando Supabase está accesible.
-- [ ] `npm run build` completa sin errores de tipos ni de ESLint.
-- [ ] Ninguna pantalla existente (Home, Biblioteca, Detalle, Reproductor, Salón, Acerca de, Auth) cambia de comportamiento visual o funcional — la integración es puramente de infraestructura.
-- [ ] El proyecto Supabase sigue sin tablas ni migraciones al finalizar este spec (verificable con la herramienta MCP `list_tables`).
+- [x] `package.json` incluye `@supabase/supabase-js` y `@supabase/ssr` como dependencias.
+- [x] `.env.template` documenta `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; `.env.local` tiene los valores reales del proyecto `gfngxwpnonizcpgjcazf`.
+- [x] `lib/supabase/client.ts` y `lib/supabase/server.ts` existen, exportan `createClient()`, y `npx tsc --noEmit` no reporta errores.
+- [x] `proxy.ts` en la raíz existe y usa `updateSession` de `lib/supabase/proxy.ts`; navegar la app en `npm run dev` no produce errores ni excepciones del proxy en consola.
+- [x] `GET /api/health/supabase` responde `200 { ok: true }` cuando Supabase está accesible.
+- [x] `npm run build` completa sin errores de tipos ni de ESLint.
+- [x] Ninguna pantalla existente (Home, Biblioteca, Detalle, Reproductor, Salón, Acerca de, Auth) cambia de comportamiento visual o funcional — la integración es puramente de infraestructura.
+- [x] El proyecto Supabase sigue sin tablas ni migraciones al finalizar este spec (verificable con la herramienta MCP `list_tables`).
 
 ---
 

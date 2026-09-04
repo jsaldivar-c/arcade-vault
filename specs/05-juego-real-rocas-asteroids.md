@@ -98,17 +98,17 @@ export function createAsteroidsGame(
 
 ## Acceptance criteria
 
-- [ ] `lib/games/engine.ts` exporta `GameCallbacks`, `GameHandle` y `GameFactory`.
-- [ ] `lib/games/asteroids/engine.ts` exporta `createAsteroidsGame(canvas, callbacks): GameHandle` con la misma mecánica de juego que `references/started-games/02-asteroids/game.js` (wraparound, división de asteroides, puntos 100/50/20, 3 vidas con invencibilidad al reaparecer, niveles, power-up de disparo triple).
-- [ ] `/juego/rocas/jugar` renderiza el canvas real dentro del `.crt-screen` y es jugable con flechas + espacio; las flechas y espacio ya no hacen scroll de la página mientras el juego está montado.
-- [ ] El HUD de React (Puntuación/Vidas/Nivel) en `/juego/rocas/jugar` refleja el estado real del motor en vivo, sin HUD duplicado dibujado dentro del canvas.
-- [ ] Perder las 3 vidas en ROCAS abre automáticamente el modal "FIN DEL JUEGO" con la puntuación real; guardar la puntuación persiste una entrada en `localStorage["av_scores"]` con `game: "rocas"`.
-- [ ] El botón FIN en ROCAS abandona la partida en curso y abre el mismo modal con la puntuación acumulada hasta ese momento.
-- [ ] PAUSA detiene visualmente el juego real (el canvas deja de actualizarse) y REANUDAR lo continúa sin reiniciar el progreso.
-- [ ] JUGAR DE NUEVO desde el modal reinicia una partida nueva de ROCAS (puntuación 0, 3 vidas, nivel 1) sin recargar la página.
-- [ ] Los otros 7 juegos (`/juego/[id]/jugar` con `id !== "rocas"`) se ven y funcionan exactamente igual que antes de este spec (arena decorativo, timer falso de puntuación).
-- [ ] `lib/data.ts` no cambia (`best`/`plays` de ROCAS siguen siendo el mock estático original).
-- [ ] `npm run build` y `npm run lint` completan sin errores de tipos ni de ESLint.
+- [x] `lib/games/engine.ts` exporta `GameCallbacks`, `GameHandle` y `GameFactory`.
+- [x] `lib/games/asteroids/engine.ts` exporta `createAsteroidsGame(canvas, callbacks): GameHandle` con la misma mecánica de juego que `references/started-games/02-asteroids/game.js` (wraparound, división de asteroides, puntos 100/50/20, 3 vidas con invencibilidad al reaparecer, niveles, power-up de disparo triple).
+- [x] `/juego/rocas/jugar` renderiza el canvas real dentro del `.crt-screen` y es jugable con flechas + espacio; las flechas y espacio ya no hacen scroll de la página mientras el juego está montado.
+- [x] El HUD de React (Puntuación/Vidas/Nivel) en `/juego/rocas/jugar` refleja el estado real del motor en vivo, sin HUD duplicado dibujado dentro del canvas.
+- [x] Perder las 3 vidas en ROCAS abre automáticamente el modal "FIN DEL JUEGO" con la puntuación real; guardar la puntuación persiste una entrada en `localStorage["av_scores"]` con `game: "rocas"`.
+- [x] El botón FIN en ROCAS abandona la partida en curso y abre el mismo modal con la puntuación acumulada hasta ese momento.
+- [x] PAUSA detiene visualmente el juego real (el canvas deja de actualizarse) y REANUDAR lo continúa sin reiniciar el progreso.
+- [x] JUGAR DE NUEVO desde el modal reinicia una partida nueva de ROCAS (puntuación 0, 3 vidas, nivel 1) sin recargar la página.
+- [x] Los otros 7 juegos (`/juego/[id]/jugar` con `id !== "rocas"`) se ven y funcionan exactamente igual que antes de este spec (arena decorativo, timer falso de puntuación).
+- [x] `lib/data.ts` no cambia (`best`/`plays` de ROCAS siguen siendo el mock estático original).
+- [x] `npm run build` y `npm run lint` completan sin errores de tipos ni de ESLint.
 
 ---
 

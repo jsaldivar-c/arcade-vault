@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import type { Game } from "@/lib/data";
 import { useSession } from "@/lib/session";
 import { saveScore } from "@/lib/scores";
+import { AsteroidsCanvas } from "@/components/games/asteroids-canvas";
 
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useSession();
+  const isRocas = game.id === "rocas";
 
   const [score, setScore] = useState(0);
   const [lives] = useState(3);
@@ -16,6 +18,12 @@ export function GamePlayer({ game }: { game: Game }) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user?.name ?? "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [restartKey, setRestartKey] = useState(0);
+  const [engineState, setEngineState] = useState({
+    score: 0,
+    lives: 3,
+    level: 1,
+  });
 
   // Sincroniza el nombre editable con la sesión la primera vez que se resuelve
   // (hidratación de localStorage), sin pisar lo que el jugador ya haya escrito.
@@ -28,17 +36,35 @@ export function GamePlayer({ game }: { game: Game }) {
   const level = Math.floor(score / 2500) + 1;
 
   useEffect(() => {
-    if (over || paused) return;
-    const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
+    if (isRocas || over || paused) return;
+    const t = setInterval(
+      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      220,
+    );
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [isRocas, over, paused]);
 
-  const endGame = () => setOver(true);
+  const displayScore = isRocas ? engineState.score : score;
+  const displayLives = isRocas ? engineState.lives : lives;
+  const displayLevel = isRocas ? engineState.level : level;
+
+  const endGame = () => {
+    if (isRocas) setScore(engineState.score);
+    setOver(true);
+  };
   const restart = () => {
     setScore(0);
     setPaused(false);
     setOver(false);
     setSaved(false);
+    if (isRocas) {
+      setEngineState({ score: 0, lives: 3, level: 1 });
+      setRestartKey((k) => k + 1);
+    }
+  };
+  const handleEngineGameOver = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
   };
   const handleSave = () => {
     saveScore({ game: game.id, score, name, at: Date.now() });
@@ -57,15 +83,15 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
           <div className="hud-stat">
             <div className="l">Puntuación</div>
-            <div className="v">{score.toLocaleString("es-ES")}</div>
+            <div className="v">{displayScore.toLocaleString("es-ES")}</div>
           </div>
           <div className="hud-stat lives">
             <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            <div className="v">{"♥ ".repeat(displayLives).trim() || "—"}</div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
-            <div className="v">{String(level).padStart(2, "0")}</div>
+            <div className="v">{String(displayLevel).padStart(2, "0")}</div>
           </div>
         </div>
         <div className="hud-actions">
@@ -75,7 +101,10 @@ export function GamePlayer({ game }: { game: Game }) {
           <button className="btn magenta" onClick={endGame}>
             FIN
           </button>
-          <button className="btn ghost" onClick={() => router.push(`/juego/${game.id}`)}>
+          <button
+            className="btn ghost"
+            onClick={() => router.push(`/juego/${game.id}`)}
+          >
             SALIR
           </button>
         </div>
@@ -83,22 +112,39 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor" />
-            <div className="enemy e1" />
-            <div className="enemy e2" />
-            <div className="enemy e3" />
-            <div className="player-ship" />
-          </div>
+          {isRocas ? (
+            <AsteroidsCanvas
+              paused={paused || over}
+              restartKey={restartKey}
+              onStateChange={setEngineState}
+              onGameOver={handleEngineGameOver}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor" />
+              <div className="enemy e1" />
+              <div className="enemy e2" />
+              <div className="enemy e3" />
+              <div className="player-ship" />
+            </div>
+          )}
           {paused && (
-            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+            <div
+              className="crt-content"
+              style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}
+            >
               <div>
                 <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
                   EN PAUSA
                 </div>
                 <div
                   className="mono"
-                  style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}
+                  style={{
+                    fontSize: 11,
+                    color: "var(--ink-dim)",
+                    marginTop: 10,
+                    letterSpacing: "0.16em",
+                  }}
                 >
                   PULSA REANUDAR PARA CONTINUAR
                 </div>
@@ -108,9 +154,7 @@ export function GamePlayer({ game }: { game: Game }) {
         </div>
         <div className="crt-bottom">
           <span className="led">SEÑAL OK</span>
-          <span>
-            {game.title} · CRT-83 · 60 HZ
-          </span>
+          <span>{game.title} · CRT-83 · 60 HZ</span>
           <span>CARGA · 1MB</span>
         </div>
       </div>
@@ -125,7 +169,9 @@ export function GamePlayer({ game }: { game: Game }) {
               <div className="input-row">
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                  onChange={(e) =>
+                    setName(e.target.value.toUpperCase().slice(0, 10))
+                  }
                   placeholder="TUS INICIALES"
                 />
                 <button className="btn yellow" onClick={handleSave}>

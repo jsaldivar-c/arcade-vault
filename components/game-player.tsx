@@ -18,6 +18,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user?.name ?? "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [restartKey, setRestartKey] = useState(0);
   const [engineState, setEngineState] = useState({
     score: 0,
@@ -57,6 +59,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setSaveError(null);
     if (isRocas) {
       setEngineState({ score: 0, lives: 3, level: 1 });
       setRestartKey((k) => k + 1);
@@ -66,8 +69,15 @@ export function GamePlayer({ game }: { game: Game }) {
     setScore(finalScore);
     setOver(true);
   };
-  const handleSave = () => {
-    saveScore({ game: game.id, score, name, at: Date.now() });
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveError(null);
+    const { error } = await saveScore({ game: game.id, score, name });
+    setSaving(false);
+    if (error) {
+      setSaveError(error);
+      return;
+    }
     setSaved(true);
   };
 
@@ -174,9 +184,25 @@ export function GamePlayer({ game }: { game: Game }) {
                   }
                   placeholder="TUS INICIALES"
                 />
-                <button className="btn yellow" onClick={handleSave}>
-                  GUARDAR PUNTUACIÓN
+                <button
+                  className="btn yellow"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
                 </button>
+                {saveError && (
+                  <div
+                    className="mono"
+                    style={{
+                      color: "var(--magenta)",
+                      fontSize: 11,
+                      marginTop: 8,
+                    }}
+                  >
+                    ▸ ERROR AL GUARDAR: {saveError}. INTENTA DE NUEVO.
+                  </div>
+                )}
               </div>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>

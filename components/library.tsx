@@ -1,18 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GAMES, CATS, type CategoryFilter } from "@/lib/data";
+import { CATS, type CategoryFilter, type Game } from "@/lib/data";
 import { GameCard } from "@/components/game-card";
 
-export function Library() {
+export function Library({ games }: { games: Game[] }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<CategoryFilter>("TODOS");
 
   const filtered = useMemo(() => {
-    return GAMES.filter(
-      (g) => (cat === "TODOS" || g.cat === cat) && g.title.toLowerCase().includes(q.toLowerCase())
+    return games.filter(
+      (g) =>
+        (cat === "TODOS" || g.cat === cat) &&
+        g.title.toLowerCase().includes(q.toLowerCase()),
     );
-  }, [q, cat]);
+  }, [games, q, cat]);
 
   return (
     <div className="fade-in">
@@ -58,7 +60,14 @@ export function Library() {
               color: "var(--ink-faint)",
             }}
           >
-            <div className="pixel" style={{ fontSize: 14, color: "var(--magenta)", marginBottom: 12 }}>
+            <div
+              className="pixel"
+              style={{
+                fontSize: 14,
+                color: "var(--magenta)",
+                marginBottom: 12,
+              }}
+            >
               NO HAY RESULTADOS
             </div>
             <div>Intenta otra búsqueda o categoría.</div>

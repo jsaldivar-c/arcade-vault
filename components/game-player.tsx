@@ -10,7 +10,7 @@ import { AsteroidsCanvas } from "@/components/games/asteroids-canvas";
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useSession();
-  const isRocas = game.id === "rocas";
+  const isAsteroids = game.id === "asteroids";
 
   const [score, setScore] = useState(0);
   const [lives] = useState(3);
@@ -38,20 +38,20 @@ export function GamePlayer({ game }: { game: Game }) {
   const level = Math.floor(score / 2500) + 1;
 
   useEffect(() => {
-    if (isRocas || over || paused) return;
+    if (isAsteroids || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isRocas, over, paused]);
+  }, [isAsteroids, over, paused]);
 
-  const displayScore = isRocas ? engineState.score : score;
-  const displayLives = isRocas ? engineState.lives : lives;
-  const displayLevel = isRocas ? engineState.level : level;
+  const displayScore = isAsteroids ? engineState.score : score;
+  const displayLives = isAsteroids ? engineState.lives : lives;
+  const displayLevel = isAsteroids ? engineState.level : level;
 
   const endGame = () => {
-    if (isRocas) setScore(engineState.score);
+    if (isAsteroids) setScore(engineState.score);
     setOver(true);
   };
   const restart = () => {
@@ -60,7 +60,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setOver(false);
     setSaved(false);
     setSaveError(null);
-    if (isRocas) {
+    if (isAsteroids) {
       setEngineState({ score: 0, lives: 3, level: 1 });
       setRestartKey((k) => k + 1);
     }
@@ -122,7 +122,7 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          {isRocas ? (
+          {isAsteroids ? (
             <AsteroidsCanvas
               paused={paused || over}
               restartKey={restartKey}

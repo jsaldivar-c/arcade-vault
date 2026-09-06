@@ -222,7 +222,7 @@ const FEATURES = [
 ];
 
 const TICKER = [
-  { p: "NEONFOX", g: "Caída", s: 184220, t: "hace 2 min", c: "magenta" },
+  { p: "NEONFOX", g: "Tetris", s: 184220, t: "hace 2 min", c: "magenta" },
   { p: "PX_KAI", g: "Glotón", s: 96400, t: "hace 5 min", c: "yellow" },
   { p: "Z3R0COOL", g: "Invasores", s: 54190, t: "hace 8 min", c: "green" },
   { p: "VAULT_07", g: "Asteroids", s: 41200, t: "hace 12 min", c: "cyan" },

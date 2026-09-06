@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import type { Game } from "@/lib/data";
 import { useSession } from "@/lib/session";
 import { saveScore } from "@/lib/scores";
-import { AsteroidsCanvas } from "@/components/games/asteroids-canvas";
+import { GAME_CANVAS_REGISTRY } from "@/lib/games/registry";
 
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useSession();
-  const isAsteroids = game.id === "asteroids";
+  const EngineCanvas = GAME_CANVAS_REGISTRY[game.id];
+  const hasRealEngine = Boolean(EngineCanvas);
 
   const [score, setScore] = useState(0);
   const [lives] = useState(3);
@@ -38,20 +39,20 @@ export function GamePlayer({ game }: { game: Game }) {
   const level = Math.floor(score / 2500) + 1;
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (hasRealEngine || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [hasRealEngine, over, paused]);
 
-  const displayScore = isAsteroids ? engineState.score : score;
-  const displayLives = isAsteroids ? engineState.lives : lives;
-  const displayLevel = isAsteroids ? engineState.level : level;
+  const displayScore = hasRealEngine ? engineState.score : score;
+  const displayLives = hasRealEngine ? engineState.lives : lives;
+  const displayLevel = hasRealEngine ? engineState.level : level;
 
   const endGame = () => {
-    if (isAsteroids) setScore(engineState.score);
+    if (hasRealEngine) setScore(engineState.score);
     setOver(true);
   };
   const restart = () => {
@@ -60,7 +61,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setOver(false);
     setSaved(false);
     setSaveError(null);
-    if (isAsteroids) {
+    if (hasRealEngine) {
       setEngineState({ score: 0, lives: 3, level: 1 });
       setRestartKey((k) => k + 1);
     }
@@ -122,8 +123,8 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          {isAsteroids ? (
-            <AsteroidsCanvas
+          {hasRealEngine ? (
+            <EngineCanvas
               paused={paused || over}
               restartKey={restartKey}
               onStateChange={setEngineState}

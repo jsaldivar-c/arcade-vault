@@ -1,0 +1,22 @@
+import { AsteroidsCanvas } from "@/components/games/asteroids-canvas";
+import { TetrisCanvas } from "@/components/games/tetris-canvas";
+
+export interface GameCanvasProps {
+  paused: boolean;
+  restartKey: number;
+  onStateChange: (state: {
+    score: number;
+    lives: number;
+    level: number;
+  }) => void;
+  onGameOver: (finalScore: number) => void;
+}
+
+export type GameCanvasComponent = (
+  props: GameCanvasProps,
+) => React.ReactElement;
+
+export const GAME_CANVAS_REGISTRY: Record<string, GameCanvasComponent> = {
+  asteroids: AsteroidsCanvas,
+  tetris: TetrisCanvas,
+};

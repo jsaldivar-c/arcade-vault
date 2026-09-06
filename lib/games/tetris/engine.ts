@@ -97,8 +97,11 @@ export function createTetrisGame(
   const boardOffsetY = Math.floor((H - BOARD_H) / 2);
 
   const NEXT_BLOCK = 20;
-  const NEXT_BOX_SIZE = NEXT_BLOCK * 4 + 16;
-  const nextBoxX = W - NEXT_BOX_SIZE - 16;
+  const NEXT_LABEL_H = 20;
+  const NEXT_GRID_SIZE = NEXT_BLOCK * 4 + 16;
+  const NEXT_BOX_W = NEXT_GRID_SIZE;
+  const NEXT_BOX_H = NEXT_LABEL_H + NEXT_GRID_SIZE;
+  const nextBoxX = W - NEXT_BOX_W - 16;
   const nextBoxY = 16;
 
   // ── Estado del juego (encapsulado por instancia) ─────────────────────────
@@ -274,12 +277,44 @@ export function createTetrisGame(
       ctx.lineTo(boardOffsetX + BOARD_W, boardOffsetY + r * BLOCK);
       ctx.stroke();
     }
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(
+      boardOffsetX - 1,
+      boardOffsetY - 1,
+      BOARD_W + 2,
+      BOARD_H + 2,
+    );
+    ctx.restore();
   }
 
   function drawNext() {
-    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.save();
+    ctx.fillStyle = "rgba(0,245,255,0.06)";
+    ctx.fillRect(nextBoxX, nextBoxY, NEXT_BOX_W, NEXT_BOX_H);
+
+    ctx.shadowColor = "#00f5ff";
+    ctx.shadowBlur = 6;
+    ctx.strokeStyle = "#00f5ff";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(nextBoxX, nextBoxY, NEXT_BOX_W, NEXT_BOX_H);
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = "rgba(0,245,255,0.75)";
+    ctx.font = "10px monospace";
+    ctx.textBaseline = "top";
+    ctx.fillText("SIGUIENTE", nextBoxX + 8, nextBoxY + 6);
+
+    ctx.strokeStyle = "rgba(0,245,255,0.25)";
     ctx.lineWidth = 1;
-    ctx.strokeRect(nextBoxX, nextBoxY, NEXT_BOX_SIZE, NEXT_BOX_SIZE);
+    ctx.beginPath();
+    ctx.moveTo(nextBoxX, nextBoxY + NEXT_LABEL_H);
+    ctx.lineTo(nextBoxX + NEXT_BOX_W, nextBoxY + NEXT_LABEL_H);
+    ctx.stroke();
+    ctx.restore();
+
     const shape = next.shape;
     const offC = Math.floor((4 - shape[0].length) / 2);
     const offR = Math.floor((4 - shape.length) / 2);
@@ -291,7 +326,7 @@ export function createTetrisGame(
           shape[r][c],
           NEXT_BLOCK,
           nextBoxX + 8,
-          nextBoxY + 8,
+          nextBoxY + NEXT_LABEL_H + 8,
         );
   }
 

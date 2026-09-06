@@ -1,6 +1,6 @@
 # SPEC 07 — Segundo juego real: TETRIS
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-09-05
 > **Objective:** Renombrar el juego `caida`/"CAÍDA" a `tetris`/"TETRIS" en el catálogo de Supabase (mismo tratamiento que PR #15 hizo con ROCAS→ASTEROIDS) y reemplazar el arena decorativo del Reproductor de TETRIS por el motor real de `references/started-games/03-tetris` (portado a TypeScript y encapsulado en el mismo contrato reutilizable `lib/games/engine.ts` que ya usa ASTEROIDS), integrado con el HUD y el modal de fin de partida ya existentes, y migrar el wiring de `game-player.tsx` de un booleano hardcodeado a un registro genérico juego→componente.

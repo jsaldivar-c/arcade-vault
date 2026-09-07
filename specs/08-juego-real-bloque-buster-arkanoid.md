@@ -1,6 +1,6 @@
 # SPEC 08 — Tercer juego real: ARKANOID
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-09-07
 > **Objective:** Renombrar el juego `bloque-buster`/"BLOQUE BUSTER" a `arkanoid`/"ARKANOID" en el catálogo de Supabase (mismo tratamiento que PR #15 hizo con ROCAS→ASTEROIDS y SPEC 07 con CAÍDA→TETRIS) y reemplazar el arena decorativo del Reproductor por el motor real de `references/started-games/04-arkanoid` (portado a TypeScript, mismo contrato reutilizable `lib/games/engine.ts` que ya usan ASTEROIDS y TETRIS), agregando la entrada correspondiente al registro ya existente `lib/games/registry.ts`.

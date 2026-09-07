@@ -232,7 +232,7 @@ export function createSnakeGame(
       return;
     }
 
-    const dt = lastTime === null ? 0 : ts - lastTime;
+    const dt = lastTime === null ? 0 : Math.min(ts - lastTime, 250);
     lastTime = ts;
 
     tickAccum += dt;

@@ -57,7 +57,13 @@ export function SnakeCanvas({
       ref={canvasRef}
       width={800}
       height={600}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        margin: "auto",
+        width: "92%",
+        height: "92%",
+      }}
     />
   );
 }

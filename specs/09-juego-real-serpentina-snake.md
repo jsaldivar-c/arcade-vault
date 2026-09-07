@@ -1,6 +1,6 @@
 # SPEC 09 — Tercer juego real: SNAKE
 
-> **Status:** Aprobado
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-09-07
 > **Objective:** Renombrar el juego `serpentina`/"SERPENTINA" a `snake`/"SNAKE" en el catálogo de Supabase (mismo tratamiento que PR #15 hizo con ROCAS→ASTEROIDS, SPEC 07 con CAÍDA→TETRIS y SPEC 08 con BLOQUE BUSTER→ARKANOID) y reemplazar el arena decorativo del Reproductor de SNAKE por un motor real diseñado desde cero siguiendo las reglas clásicas de Snake (sin referencia de lógica jugable disponible, solo un atlas de sprites de frutas), agregando la entrada correspondiente al registro ya existente `lib/games/registry.ts`.

@@ -227,7 +227,7 @@ const TICKER = [
   { p: "Z3R0COOL", g: "Invasores", s: 54190, t: "hace 8 min", c: "green" },
   { p: "VAULT_07", g: "Asteroids", s: 41200, t: "hace 12 min", c: "cyan" },
   { p: "GLITCHA", g: "Arkanoid", s: 28450, t: "hace 18 min", c: "cyan" },
-  { p: "ARKADYA", g: "Serpentina", s: 7820, t: "hace 24 min", c: "green" },
+  { p: "ARKADYA", g: "Snake", s: 7820, t: "hace 24 min", c: "green" },
   { p: "CYBER_LU", g: "Ranaria", s: 18900, t: "hace 31 min", c: "yellow" },
 ];
 

@@ -20,32 +20,62 @@ If a guide doesn't cover what you need, search `node_modules/next/dist/docs/` be
 
 ## Project state
 
-This repo is currently the unmodified `create-next-app` scaffold (`app/layout.tsx`, `app/page.tsx`, `app/globals.css`) — the actual Arcade Vault app has not been built yet. Treat `app/page.tsx` and the default metadata/fonts in `app/layout.tsx` as placeholders to replace, not code to preserve.
+The MVP is built and live (SPECs 01–09, all `Implemented`). This is no longer the `create-next-app` scaffold — `app/`, `components/`, and `lib/` hold real application code. Treat everything below as current architecture, not aspiration.
 
-- App Router only (no `pages/` directory).
+- App Router only (no `pages/` directory). Real routes: `/` (home), `/about`, `/biblioteca`, `/juego/[id]`, `/juego/[id]/jugar`, `/salon` (leaderboard), `/auth`, plus `app/api/contact` (Resend) and `app/api/health/supabase`.
 - Path alias `@/*` → repo root (`tsconfig.json`).
 - TypeScript `strict` mode is on.
-- Styling: Tailwind CSS v4 via `@tailwindcss/postcss` (see `postcss.config.mjs`).
+- Styling: Tailwind CSS v4 via `@tailwindcss/postcss` (see `postcss.config.mjs`), following the neon/pixel visual language from the retired prototype (see below).
+- `proxy.ts` (Next 16's renamed `middleware.ts`) refreshes the Supabase session on every request.
 
 ## Product spec: what's being built
 
-Arcade Vault is a retro-arcade web platform (Spanish-language UI) where users play browser games and compete on point leaderboards. `references/templates/` (untracked, not yet wired into the Next app) is a **static, standalone HTML/Babel-in-browser prototype** — open `references/templates/Arcade Vault.html` directly, it loads React/ReactDOM/Babel from a CDN and each `.jsx` file via `<script type="text/babel">` tags with globals (`window.GAMES`, etc.), not ES modules. Use it purely as a UX/behavior/visual reference; **do not import from it or treat its patterns (hash-based routing, `window` globals, `localStorage` state) as the target architecture** — those need to become real App Router routes, Server/Client Components, and proper data/session handling when implemented.
+Arcade Vault is a retro-arcade web platform (Spanish-language UI) where users play browser games and compete on point leaderboards. It was originally scaffolded from a static HTML/Babel-in-browser prototype in `references/templates/` — that prototype is **retired as a build reference**; its hash-routing/`window` globals/`localStorage` patterns were deliberately not carried into the real app. It's kept only for the neon/pixel visual language (`references/templates/styles.css`: CSS custom properties like `--cyan`/`--magenta`/`--yellow`/`--green`, "Press Start 2P" for pixel headings, JetBrains Mono/Courier Prime for body/mono text).
 
-What the prototype defines, file by file:
+### Data & backend (Supabase)
 
-- `data.jsx` — mock data model: `GAMES` (id, title, short/long description, category, cover, color, best score, play count), `CATS` (category filters: ARCADE/PUZZLE/SHOOTER/VERSUS), `PLAYERS` + a seeded `seededScores()` generator for leaderboard rows.
-- `nav.jsx` — top navigation (`Nav`).
-- `biblioteca.jsx` — game library/browse grid (`Library`, `GameCard`).
-- `detalle.jsx` — single game detail page (`GameDetail`).
-- `reproductor.jsx` — the game player screen that reports scores (`GamePlayer`, via `onSaveScore`).
-- `salon.jsx` — leaderboard / "Hall of Fame" (`HallOfFame`).
-- `auth.jsx` — login (`Auth`).
-- `app.jsx` — root shell composing the above behind a simple client-side router.
-- `styles.css` — the neon/pixel visual theme (CSS custom properties for colors like `--cyan`/`--magenta`/`--yellow`/`--green`, fonts "Press Start 2P" for pixel headings and JetBrains Mono/Courier Prime for body/mono text). Reference this for the visual language when building the real Tailwind-based styles.
+SPEC 04 + SPEC 06 replaced all mock data with two public Supabase tables, `games` and `scores` (public read on both, public insert on `scores` only — same trust model the old `localStorage` mock had). Server Components read them via `lib/supabase/games.ts` (`getGameWithScores()`, `getAllGamesWithScores()`); `lib/scores.ts` (`saveScore()`) inserts a run's result. Both are **generic by `game.id`** — adding a new game never requires touching either file. `lib/supabase/client.ts`/`server.ts` are the browser/server SDK clients; `lib/supabase/proxy.ts` backs the session-refresh in `proxy.ts`.
+
+### Game engine contract
+
+Every real game implements the same contract, defined once in `lib/games/engine.ts`:
+
+```ts
+export interface GameCallbacks {
+  onStateChange(state: { score: number; lives: number; level: number }): void;
+  onGameOver(finalScore: number): void;
+}
+export interface GameHandle {
+  setPaused(paused: boolean): void;
+  destroy(): void;
+}
+export type GameFactory = (
+  canvas: HTMLCanvasElement,
+  callbacks: GameCallbacks,
+) => GameHandle;
+```
+
+Per-game pattern (established by SPEC 05/ASTEROIDS, repeated for TETRIS/ARKANOID/SNAKE):
+
+- `lib/games/<id>/engine.ts` exports `createXxxGame(canvas, callbacks): GameHandle`. All mutable state lives **inside** the factory closure, never in module-level variables (React StrictMode double-invokes effects in dev, and the player can navigate to/from `/juego/<id>/jugar` repeatedly).
+- `components/games/<id>-canvas.tsx` (Client Component) mounts/tears down the engine in a `useEffect` keyed on `restartKey`, and calls `handle.setPaused(paused)` in a second effect keyed on `paused`.
+- `lib/games/registry.ts` (`GAME_CANVAS_REGISTRY`) maps `game.id -> canvas component`; `components/game-player.tsx` renders through this registry instead of a hardcoded boolean (that hardcode was retired in SPEC 07).
+
+**Games implemented today:** `asteroids` (SHOOTER), `tetris` (PUZZLE, renamed from `caida`), `arkanoid` (ARCADE, renamed from `bloque-buster`), `snake` (ARCADE, renamed from `serpentina`) — engines under `lib/games/<id>/`, canvases under `components/games/`, both registered in `lib/games/registry.ts`. **Not yet ported:** `gloton` (Pac-Man-style), `invasores` (Space Invaders), `ranaria` (Frogger), `duelo-pixel` (Pong/VERSUS) — no `lib/games/<id>/` folder exists for these yet. Reference material for started/half-built games (where it exists) lives in `references/started-games/`. See also `C:\Users\joses\Documents\Cursos\Dev\claude-code\05-arcade-vault\references\implemented-games.md` when you need to check wich games are implemented and how to implement new ones.
+
+### Contact form
+
+SPEC 03: `/about`'s contact form posts to `app/api/contact/route.ts`, which sends email via Resend (`RESEND_API_KEY`, `CONTACT_TO_EMAIL` in `.env.local`, see `.env.template`).
 
 ## Workflow: Spec Driven Design
 
-Per `README.md`, feature work follows a spec-driven workflow using `/spec` and `/spec-impl` from the `Klerith/fernando-skills` skills package (installed via `npx skills@latest add Klerith/fernando-skills`). Check for these commands/skills before starting a non-trivial feature and follow that workflow rather than jumping straight to implementation.
+Per `README.md`, feature work follows a spec-driven workflow using `/spec` and `/spec-impl` from the `Klerith/fernando-skills` skills package (installed via `npx skills@latest add Klerith/fernando-skills`, present under the user's `~/.claude/skills/`). Every feature so far (SPECs 01–09 in `specs/`) went through this workflow — check for these commands before starting a non-trivial feature and follow that workflow rather than jumping straight to implementation. Specs are numbered sequentially, kept in `specs/NN-slug.md`, start life as `Status: Draft`, and only get marked `Approved`/`Implemented` explicitly.
 
 ## Skills
-Usa siempre /frontend-design para diseñar la interfaz de usuario.
+
+- Usa siempre `/frontend-design` para diseñar la interfaz de usuario.
+- `/add-game` (project skill, `.claude/skills/add-game/SKILL.md`): generates a new SPEC (same format as SPEC 05/06) for porting or designing-from-scratch the real engine of one of the not-yet-ported games above and wiring it into the Supabase leaderboard. It only writes the spec file — never implements code. Run this before starting work on GLOTÓN, INVASORES, RANARIA, or DUELO PIXEL.
+
+## Hooks
+
+`.claude/hooks/format-and-lint.sh` runs automatically after every `Write`/`Edit` (see `.claude/settings.json`) to format/lint the touched file — no need to manually run Prettier/ESLint after edits.

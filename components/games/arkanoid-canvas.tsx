@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createArkanoidGame } from "@/lib/games/arkanoid/engine";
 import type { GameHandle } from "@/lib/games/engine";
+import { getSkin, setSkin, type SkinId } from "@/lib/games/skins";
 
 const SPRITESHEET_URL = "/games/arkanoid/spritesheet-breakout.png";
+
+const SKIN_OPTIONS: { id: SkinId; label: string }[] = [
+  { id: "clasico", label: "CLÁSICO" },
+  { id: "neon", label: "NEÓN" },
+  { id: "retro", label: "RETRO" },
+];
 
 export function ArkanoidCanvas({
   paused,
@@ -24,6 +31,12 @@ export function ArkanoidCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const handleRef = useRef<GameHandle | null>(null);
   const pausedRef = useRef(paused);
+  const [skin, setSkinState] = useState<SkinId>(() => getSkin("arkanoid"));
+  // Se incrementa cada vez que el jugador cambia de skin. El motor resuelve
+  // su paleta una sola vez al crearse (createArkanoidGame -> getSkin), así
+  // que un cambio de skin necesita forzar el remount completo del efecto de
+  // abajo — de ahí que este contador, y no solo restartKey, esté en sus deps.
+  const [skinVersion, setSkinVersion] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,19 +58,55 @@ export function ArkanoidCanvas({
       handleRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [restartKey]);
+  }, [restartKey, skinVersion]);
 
   useEffect(() => {
     pausedRef.current = paused;
     handleRef.current?.setPaused(paused);
   }, [paused]);
 
+  const handleSkinChange = (next: SkinId) => {
+    if (next === skin) return;
+    setSkin("arkanoid", next);
+    setSkinState(next);
+    setSkinVersion((v) => v + 1);
+  };
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={800}
-      height={600}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-    />
+    <div style={{ position: "absolute", inset: 0 }}>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          display: "flex",
+          gap: 6,
+          zIndex: 4,
+        }}
+      >
+        {SKIN_OPTIONS.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            className={`chip${skin === opt.id ? " active" : ""}`}
+            style={{ padding: "6px 8px", fontSize: 8 }}
+            onClick={() => handleSkinChange(opt.id)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

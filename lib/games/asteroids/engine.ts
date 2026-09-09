@@ -1,4 +1,6 @@
 import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import { getSkin } from "@/lib/games/skins";
+import { ASTEROIDS_PALETTES } from "@/lib/games/asteroids/skins";
 
 const W = 800;
 const H = 600;
@@ -36,6 +38,11 @@ export function createAsteroidsGame(
     throw new Error("No se pudo obtener el contexto 2D del canvas");
   }
   const ctx = maybeCtx;
+
+  // Paleta de colores de la skin activa, resuelta una sola vez al crear esta
+  // instancia del motor (el canvas fuerza un remount completo al cambiar de
+  // skin, ver components/games/asteroids-canvas.tsx).
+  const palette = ASTEROIDS_PALETTES[getSkin("asteroids")];
 
   // ── Input (encapsulado por instancia) ────────────────────────────────────
   const keys: Record<string, boolean> = {};
@@ -86,10 +93,15 @@ export function createAsteroidsGame(
     }
 
     draw() {
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = palette.bullet;
+      if (palette.glow) {
+        ctx.shadowColor = palette.bullet;
+        ctx.shadowBlur = 10;
+      }
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.shadowBlur = 0;
     }
   }
 
@@ -146,9 +158,13 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.rot);
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = palette.asteroid;
       ctx.lineWidth = 1.5;
       ctx.lineJoin = "round";
+      if (palette.glow) {
+        ctx.shadowColor = palette.asteroid;
+        ctx.shadowBlur = 8;
+      }
       ctx.beginPath();
       ctx.moveTo(this.verts[0][0], this.verts[0][1]);
       for (let i = 1; i < this.verts.length; i++)
@@ -191,16 +207,25 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(Math.PI / 4);
-      ctx.strokeStyle = "#0ff";
+      ctx.strokeStyle = palette.powerUp;
       ctx.lineWidth = 2;
+      if (palette.glow) {
+        ctx.shadowColor = palette.powerUp;
+        ctx.shadowBlur = 10;
+      }
       const r = this.radius * pulse;
       ctx.strokeRect(-r, -r, r * 2, r * 2);
       ctx.restore();
-      ctx.fillStyle = "#0ff";
+      ctx.fillStyle = palette.powerUp;
       ctx.font = "bold 12px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
+      if (palette.glow) {
+        ctx.shadowColor = palette.powerUp;
+        ctx.shadowBlur = 8;
+      }
       ctx.fillText("3x", this.x, this.y);
+      ctx.shadowBlur = 0;
     }
   }
 
@@ -284,9 +309,13 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = palette.ship;
       ctx.lineWidth = 1.5;
       ctx.lineJoin = "round";
+      if (palette.glow) {
+        ctx.shadowColor = palette.ship;
+        ctx.shadowBlur = 10;
+      }
 
       // Silueta clásica: triángulo con muesca trasera
       ctx.beginPath();
@@ -303,7 +332,11 @@ export function createAsteroidsGame(
         ctx.moveTo(-8, -4);
         ctx.lineTo(-8 - rand(6, 14), 0);
         ctx.lineTo(-8, 4);
-        ctx.strokeStyle = "rgba(255, 130, 0, 0.85)";
+        ctx.strokeStyle = palette.thruster;
+        if (palette.glow) {
+          ctx.shadowColor = palette.thruster;
+          ctx.shadowBlur = 12;
+        }
         ctx.stroke();
       }
 
@@ -341,7 +374,7 @@ export function createAsteroidsGame(
 
     draw() {
       const alpha = this.ttl / this.life;
-      ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+      ctx.strokeStyle = `rgba(${palette.particleRgb},${alpha.toFixed(2)})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
@@ -515,6 +548,8 @@ export function createAsteroidsGame(
 
   // ── Draw ──────────────────────────────────────────────────────────────────
   function draw() {
+    // Fondo fijo en las 3 skins: no forma parte de la paleta de gameplay,
+    // es el mismo negro casi puro que usa el marco CRT en toda la app.
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, W, H);
 

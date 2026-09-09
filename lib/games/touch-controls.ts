@@ -29,16 +29,18 @@ export const TOUCH_LAYOUTS: Record<string, TouchLayoutConfig> = {
       right: { code: "ArrowRight", label: "►" },
       up: { code: "ArrowUp", label: "▲" },
     },
-    actions: [{ code: "Space", label: "DISPARAR" }],
+    actions: [{ code: "Space", label: "A" }],
   },
   tetris: {
     dpad: {
       left: { code: "ArrowLeft", label: "◄", repeat: true },
       right: { code: "ArrowRight", label: "►", repeat: true },
       down: { code: "ArrowDown", label: "▼", repeat: true },
-      up: { code: "ArrowUp", label: "⟳", repeat: true },
     },
-    actions: [{ code: "Space", label: "CAÍDA" }],
+    actions: [
+      { code: "ArrowUp", label: "A", repeat: true },
+      { code: "Space", label: "B" },
+    ],
   },
   arkanoid: {
     dpad: {

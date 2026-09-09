@@ -1,4 +1,6 @@
 import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import { getSkin } from "@/lib/games/skins";
+import { ARKANOID_PALETTES } from "@/lib/games/arkanoid/skins";
 
 const W = 800;
 const H = 600;
@@ -226,6 +228,11 @@ export function createArkanoidGame(
   }
   const ctx = maybeCtx;
 
+  // Paleta de colores de la skin activa, resuelta una sola vez al crear esta
+  // instancia del motor (el canvas fuerza un remount completo al cambiar de
+  // skin, ver components/games/arkanoid-canvas.tsx).
+  const palette = ARKANOID_PALETTES[getSkin("arkanoid")];
+
   // ── Sprites y sonido (encapsulado por instancia) ─────────────────────────
   let spritesheet: HTMLImageElement | null = null;
   const spriteImage = new Image();
@@ -395,8 +402,17 @@ export function createArkanoidGame(
     if (!spritesheet) return;
     const sheet = spritesheet;
 
+    // Fondo fijo en las 3 skins: no forma parte de la paleta de gameplay,
+    // es el mismo negro casi puro que usa el marco CRT en toda la app. Se
+    // limpia con el filtro apagado para que nunca herede el de la skin.
+    ctx.filter = "none";
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, W, H);
+
+    // Reinterpreta el bitmap del spritesheet para bloques/explosiones/pala/
+    // bola sin tocar el archivo — "none" en clasico deja el render idéntico
+    // al de hoy.
+    ctx.filter = palette.spriteFilter;
 
     for (const block of blocks) {
       if (!block.alive) continue;
@@ -433,6 +449,10 @@ export function createArkanoidGame(
       );
     }
 
+    if (palette.paddleGlow) {
+      ctx.shadowColor = palette.paddleGlow;
+      ctx.shadowBlur = palette.glowBlur;
+    }
     ctx.drawImage(
       sheet,
       SPRITES.paddle.sx,
@@ -444,6 +464,12 @@ export function createArkanoidGame(
       paddle.w,
       paddle.h,
     );
+    ctx.shadowBlur = 0;
+
+    if (palette.ballGlow) {
+      ctx.shadowColor = palette.ballGlow;
+      ctx.shadowBlur = palette.glowBlur;
+    }
     ctx.drawImage(
       sheet,
       SPRITES.ball.sx,
@@ -455,6 +481,8 @@ export function createArkanoidGame(
       ball.w,
       ball.h,
     );
+    ctx.shadowBlur = 0;
+    ctx.filter = "none";
   }
 
   // ── Input (encapsulado por instancia) ────────────────────────────────────

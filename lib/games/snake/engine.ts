@@ -1,4 +1,6 @@
 import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import { getSkin } from "@/lib/games/skins";
+import { SNAKE_PALETTES } from "@/lib/games/snake/skins";
 
 const W = 800;
 const H = 600;
@@ -14,9 +16,6 @@ const FRUITS_PER_LEVEL = 5;
 const POINTS_PER_FRUIT = 10;
 
 const SPRITESHEET_URL = "/games/snake/fruits.png";
-
-const SNAKE_HEAD_COLOR = "#00ff88";
-const SNAKE_BODY_COLOR = "#00b368";
 
 const PREVENT_DEFAULT_CODES = new Set([
   "ArrowUp",
@@ -83,6 +82,9 @@ export function createSnakeGame(
     throw new Error("No se pudo obtener el contexto 2D del canvas");
   }
   const ctx = maybeCtx;
+
+  // ── Skin (resuelta una sola vez al crear la instancia) ───────────────────
+  const palette = SNAKE_PALETTES[getSkin("snake")];
 
   // ── Sprites (encapsulado por instancia) ──────────────────────────────────
   let spritesheet: HTMLImageElement | null = null;
@@ -205,9 +207,17 @@ export function createSnakeGame(
     }
 
     segments.forEach((s, i) => {
-      ctx.fillStyle = i === 0 ? SNAKE_HEAD_COLOR : SNAKE_BODY_COLOR;
+      const color = i === 0 ? palette.head : palette.body;
+      ctx.fillStyle = color;
+      if (palette.glow) {
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = palette.head;
+      } else {
+        ctx.shadowBlur = 0;
+      }
       ctx.fillRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2);
     });
+    ctx.shadowBlur = 0;
   }
 
   // ── Input (encapsulado por instancia) ────────────────────────────────────

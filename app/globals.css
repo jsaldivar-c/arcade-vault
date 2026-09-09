@@ -1134,6 +1134,105 @@ a {
   box-shadow: 0 0 6px var(--green);
 }
 
+/* controles táctiles — ocultos por defecto, solo dispositivos con puntero táctil */
+.touch-controls {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 16px;
+  padding: 10px 6px;
+  touch-action: none;
+}
+.touch-dpad {
+  display: grid;
+  grid-template-areas:
+    ".    up    ."
+    "left .     right"
+    ".    down  .";
+  grid-template-columns: 56px 56px 56px;
+  grid-template-rows: 56px 56px 56px;
+  gap: 6px;
+}
+.touch-dpad-up {
+  grid-area: up;
+}
+.touch-dpad-left {
+  grid-area: left;
+}
+.touch-dpad-right {
+  grid-area: right;
+}
+.touch-dpad-down {
+  grid-area: down;
+}
+.touch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.touch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 8px;
+  font-family: var(--pixel);
+  font-size: 14px;
+  color: var(--cyan);
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--cyan);
+  border-radius: 10px;
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+.touch-btn:active {
+  background: rgba(0, 245, 255, 0.25);
+  box-shadow: 0 0 14px rgba(0, 245, 255, 0.55);
+}
+.touch-btn-action {
+  min-width: 84px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--magenta);
+  background: rgba(255, 0, 110, 0.08);
+  border-color: var(--magenta);
+}
+.touch-btn-action:active {
+  background: rgba(255, 0, 110, 0.25);
+  box-shadow: 0 0 14px rgba(255, 0, 110, 0.55);
+}
+@media (pointer: coarse) {
+  .touch-controls {
+    display: flex;
+  }
+}
+
+/* aviso de orientación — solo puntero táctil + retrato */
+.rotate-hint {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  border-radius: 8px;
+  text-align: center;
+}
+@media (pointer: coarse) and (orientation: portrait) {
+  .rotate-hint {
+    display: flex;
+  }
+}
+
 /* fake in-screen game */
 .game-arena {
   position: absolute;

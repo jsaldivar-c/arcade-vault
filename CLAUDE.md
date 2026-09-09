@@ -76,6 +76,10 @@ Per `README.md`, feature work follows a spec-driven workflow using `/spec` and `
 - Usa siempre `/frontend-design` para diseñar la interfaz de usuario.
 - `/add-game` (project skill, `.claude/skills/add-game/SKILL.md`): generates a new SPEC (same format as SPEC 05/06) for porting or designing-from-scratch the real engine of one of the not-yet-ported games above and wiring it into the Supabase leaderboard. It only writes the spec file — never implements code. Run this before starting work on GLOTÓN, INVASORES, RANARIA, or DUELO PIXEL.
 
+## Agents
+
+- `game-planner` (project subagent, `.claude/agents/game-planner.md`): decides which game fits the platform best to build next — from the not-yet-ported backlog above or a wholly new concept — evaluating category/color balance, engine reuse, and score-ability. Manual invocation only (`Agent` tool, `subagent_type: "game-planner"`); never dispatch it proactively. It only outputs a recommendation (never writes a spec or code) and maintains its own memory across runs in `references/game-planner-log.md` (full reasoning history) and `references/game-suggestions-todo.md` (pending-suggestions checklist) — read those before assuming what's already been proposed. Run `/add-game <id>` yourself afterward if you want to act on its recommendation.
+
 ## Hooks
 
 `.claude/hooks/format-and-lint.sh` runs automatically after every `Write`/`Edit` (see `.claude/settings.json`) to format/lint the touched file — no need to manually run Prettier/ESLint after edits.

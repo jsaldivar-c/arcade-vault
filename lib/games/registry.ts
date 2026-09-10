@@ -2,6 +2,7 @@ import { AsteroidsCanvas } from "@/components/games/asteroids-canvas";
 import { TetrisCanvas } from "@/components/games/tetris-canvas";
 import { ArkanoidCanvas } from "@/components/games/arkanoid-canvas";
 import { SnakeCanvas } from "@/components/games/snake-canvas";
+import { FroggerCanvas } from "@/components/games/frogger-canvas";
 
 export interface GameCanvasProps {
   paused: boolean;
@@ -23,4 +24,5 @@ export const GAME_CANVAS_REGISTRY: Record<string, GameCanvasComponent> = {
   tetris: TetrisCanvas,
   arkanoid: ArkanoidCanvas,
   snake: SnakeCanvas,
+  frogger: FroggerCanvas,
 };

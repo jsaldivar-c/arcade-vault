@@ -6,6 +6,7 @@ import type { Game } from "@/lib/data";
 import { useSession } from "@/lib/session";
 import { saveScore } from "@/lib/scores";
 import { GAME_CANVAS_REGISTRY } from "@/lib/games/registry";
+import { TouchControls } from "@/components/games/touch-controls";
 
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
@@ -169,6 +170,15 @@ export function GamePlayer({ game }: { game: Game }) {
           <span>CARGA · 1MB</span>
         </div>
       </div>
+
+      {hasRealEngine && (
+        <>
+          <TouchControls gameId={game.id} />
+          <div className="rotate-hint">
+            GIRA TU DISPOSITIVO PARA JUGAR MEJOR
+          </div>
+        </>
+      )}
 
       {over && (
         <div className="modal-bd">

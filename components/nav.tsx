@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/lib/session";
+import { GAME_CANVAS_REGISTRY } from "@/lib/games/registry";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -11,9 +12,18 @@ export function Nav() {
   const router = useRouter();
   const { user, logout } = useSession();
 
+  // Misma condición que usa GamePlayer para mostrar el gamepad táctil
+  // (juego con motor real + pantalla de jugar) — en esos casos el nav se
+  // oculta en dispositivos táctiles para no restarle espacio al juego.
+  const playMatch = pathname.match(/^\/juego\/([^/]+)\/jugar$/);
+  const isRealEnginePlayScreen = Boolean(
+    playMatch && GAME_CANVAS_REGISTRY[playMatch[1]],
+  );
+
   const isActive = (name: "inicio" | "biblioteca" | "salon" | "about") => {
     if (name === "inicio") return pathname === "/";
-    if (name === "biblioteca") return pathname === "/biblioteca" || pathname.startsWith("/juego");
+    if (name === "biblioteca")
+      return pathname === "/biblioteca" || pathname.startsWith("/juego");
     if (name === "salon") return pathname === "/salon";
     return pathname === "/about";
   };
@@ -27,7 +37,9 @@ export function Nav() {
 
   return (
     <>
-      <nav className="av-nav">
+      <nav
+        className={`av-nav${isRealEnginePlayScreen ? " av-nav-hide-on-touch" : ""}`}
+      >
         <Link href="/" className="logo" onClick={close}>
           <div className="logo-mark" />
           <div className="logo-text neon-cyan">
@@ -38,7 +50,10 @@ export function Nav() {
           <Link href="/" className={isActive("inicio") ? "active" : ""}>
             Inicio
           </Link>
-          <Link href="/biblioteca" className={isActive("biblioteca") ? "active" : ""}>
+          <Link
+            href="/biblioteca"
+            className={isActive("biblioteca") ? "active" : ""}
+          >
             Biblioteca
           </Link>
           <Link href="/salon" className={isActive("salon") ? "active" : ""}>
@@ -76,19 +91,38 @@ export function Nav() {
         onClick={close}
       />
       <aside className={"av-mobile-panel" + (open ? " open" : "")}>
-        <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
+        <div
+          className="pixel neon-cyan"
+          style={{ fontSize: 11, marginBottom: 16 }}
+        >
           MENÚ
         </div>
-        <Link href="/" className={isActive("inicio") ? "active" : ""} onClick={close}>
+        <Link
+          href="/"
+          className={isActive("inicio") ? "active" : ""}
+          onClick={close}
+        >
           Inicio
         </Link>
-        <Link href="/biblioteca" className={isActive("biblioteca") ? "active" : ""} onClick={close}>
+        <Link
+          href="/biblioteca"
+          className={isActive("biblioteca") ? "active" : ""}
+          onClick={close}
+        >
           Biblioteca
         </Link>
-        <Link href="/salon" className={isActive("salon") ? "active" : ""} onClick={close}>
+        <Link
+          href="/salon"
+          className={isActive("salon") ? "active" : ""}
+          onClick={close}
+        >
           Salón de la Fama
         </Link>
-        <Link href="/about" className={isActive("about") ? "active" : ""} onClick={close}>
+        <Link
+          href="/about"
+          className={isActive("about") ? "active" : ""}
+          onClick={close}
+        >
           Acerca de
         </Link>
         <Link
@@ -101,7 +135,11 @@ export function Nav() {
         <div style={{ flex: 1 }} />
         <div
           className="pixel"
-          style={{ fontSize: 9, color: "var(--ink-faint)", letterSpacing: "0.16em" }}
+          style={{
+            fontSize: 9,
+            color: "var(--ink-faint)",
+            letterSpacing: "0.16em",
+          }}
         >
           CRÉDITOS · 03
         </div>

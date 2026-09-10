@@ -19,10 +19,13 @@ const FROG_START_COL = 9;
 const GOAL_WIDTH = 2;
 const GOAL_COUNT = 5;
 
-const ROAD_SPEED_MIN = 1.5;
-const ROAD_SPEED_MAX = 4;
-const RIVER_SPEED_MIN = 1;
-const RIVER_SPEED_MAX = 3;
+// Rango base de velocidad (px/frame). Reducido ~20% respecto al valor
+// original del spec tras el playtest del Paso 11: a 1.5–4/1–3 px/frame el
+// cruce se sentía todavía rápido.
+const ROAD_SPEED_MIN = 1.2;
+const ROAD_SPEED_MAX = 3.2;
+const RIVER_SPEED_MIN = 0.8;
+const RIVER_SPEED_MAX = 2.4;
 const LEVEL_SPEED_SCALE = 1.15;
 
 const TURTLE_VISIBLE_MS = 3000;
@@ -199,7 +202,12 @@ export function createFroggerGame(
 
   // ── Helpers de ronda / rana ───────────────────────────────────────────────
   function roundTimeSec(lvl: number): number {
-    return Math.max(8, 15 - (lvl - 1));
+    // Ampliado respecto al valor original del spec (max(8, 15-(lvl-1)))
+    // tras el playtest del Paso 11: el temporizador no se reinicia al pasar
+    // por la fila segura intermedia, y 15s no alcanzaban para completar los
+    // 14 saltos mínimos (6 carriles de río + 6 de carretera) sin morir de
+    // tiempo aunque el jugador esquivara todo correctamente.
+    return Math.max(12, 25 - (lvl - 1));
   }
 
   function spawnFrog(): Frog {
@@ -368,7 +376,9 @@ export function createFroggerGame(
       }
       const lane = laneAt(frog.row);
       if (lane) {
-        frog.col += (lane.speed * lane.dir * dt) / 16;
+        // lane.speed está en px/frame; entity.col/frog.col están en columnas
+        // (CELL px cada una), así que hay que convertir antes de sumar.
+        frog.col += (lane.speed * lane.dir * dt) / 16 / CELL;
         if (frog.col < 0 || frog.col > COLS - 1) killFrog();
       }
     }
@@ -381,7 +391,9 @@ export function createFroggerGame(
 
     for (const lane of lanes) {
       for (const entity of lane.entities) {
-        entity.col += (lane.speed * lane.dir * dt) / 16;
+        // lane.speed está en px/frame; entity.col está en columnas (CELL px
+        // cada una), así que hay que convertir antes de sumar.
+        entity.col += (lane.speed * lane.dir * dt) / 16 / CELL;
         const trackLen = COLS + entity.width;
         if (lane.dir === 1 && entity.col > COLS) entity.col -= trackLen;
         if (lane.dir === -1 && entity.col < -entity.width)

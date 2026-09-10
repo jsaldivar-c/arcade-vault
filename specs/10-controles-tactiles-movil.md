@@ -1,6 +1,6 @@
 # SPEC 10 — Controles táctiles para móvil
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05, SPEC 07, SPEC 08, SPEC 09
 > **Date:** 2026-09-09
 > **Objective:** Agregar controles táctiles en pantalla (D-pad + botones de acción) para los 4 juegos con motor real (ASTEROIDS, TETRIS, ARKANOID, SNAKE), para que sean completamente jugables en dispositivos táctiles sin teclado físico, sin modificar ninguno de los 4 motores existentes ni el contrato `lib/games/engine.ts`.

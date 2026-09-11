@@ -1,4 +1,8 @@
-import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import {
+  createStateReporter,
+  type GameCallbacks,
+  type GameHandle,
+} from "@/lib/games/engine";
 import { getSkin } from "@/lib/games/skins";
 import { ARKANOID_PALETTES } from "@/lib/games/arkanoid/skins";
 
@@ -272,6 +276,8 @@ export function createArkanoidGame(
   let lastTime: number | null = null;
   let rafId = 0;
 
+  const reportState = createStateReporter(callbacks.onStateChange);
+
   const keys: Record<string, boolean> = { ArrowLeft: false, ArrowRight: false };
 
   function initPaddle() {
@@ -509,7 +515,7 @@ export function createArkanoidGame(
 
     if (paused || state !== "playing") {
       lastTime = ts;
-      callbacks.onStateChange({ score, lives, level: currentLevel });
+      reportState({ score, lives, level: currentLevel });
       rafId = requestAnimationFrame(loop);
       return;
     }
@@ -519,7 +525,7 @@ export function createArkanoidGame(
 
     update(dt);
     draw();
-    callbacks.onStateChange({ score, lives, level: currentLevel });
+    reportState({ score, lives, level: currentLevel });
     rafId = requestAnimationFrame(loop);
   }
 

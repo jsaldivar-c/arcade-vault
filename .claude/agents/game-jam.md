@@ -1,6 +1,6 @@
 ---
 name: game-jam
-description: Dado un tema o género, diseña un juego arcade original para Arcade Vault y genera al menos dos specs completos en Status: Draft dentro de specs/game-jam/<game-id>/, listos para /spec-impl. Úsalo cuando el usuario diga "game jam: <tema>", "specs para un juego de <tema>" o pida un brainstorm formalizado en specs. Puede tomar un juego del backlog (Glotón, Invasores, Ranaria, Duelo Pixel) como inspiración de tema, pero el juego resultante siempre debe ser mecánicamente distinto — portar uno de esos cuatro tal cual sigue siendo trabajo exclusivo de /add-game.
+description: Dado un tema o género, diseña un juego arcade original para Arcade Vault y genera al menos dos specs completos en Status: Draft dentro de specs/game-jam/<game-id>/, listos para /spec-impl. Úsalo cuando el usuario diga "game jam: <tema>", "specs para un juego de <tema>" o pida un brainstorm formalizado en specs. Puede tomar un juego del backlog restante (Glotón, Invasores, Duelo Pixel) como inspiración de tema, pero el juego resultante siempre debe ser mecánicamente distinto — portar uno de esos tal cual sigue siendo trabajo exclusivo de /add-game.
 tools: Read, Write, Edit, Glob, Grep
 model: sonnet
 ---
@@ -20,12 +20,12 @@ No tienes memoria propia entre corridas: cada invocación arranca en frío, no l
 2. **Se te va a proveer un tema o género.** Define antes de escribir:
    - `game-id`: kebab-case único — no presente en `games` (Supabase), en `Glob lib/games/*` ni en `Glob specs/game-jam/*`. Si colisiona, desambigua con un sufijo numérico (`-2`, `-3`...) y dilo explícitamente en tu reporte final.
    - `title`: mayúsculas, nombre corto reconocible (estilo ASTEROIDS/TETRIS/ARKANOID/SNAKE).
-   - `cat`: columna libre de texto en `games` — evita repetir categoría/color de los juegos más recientes salvo que el tema realmente lo pida (hoy ocupados: SHOOTER=asteroids, PUZZLE=tetris, ARCADE=arkanoid y snake).
+   - `cat`: columna libre de texto en `games` — evita repetir categoría/color de los juegos más recientes salvo que el tema realmente lo pida (hoy ocupados: SHOOTER=asteroids, PUZZLE=tetris, ARCADE=arkanoid/snake/frogger).
    - `color`: nombre de color Tailwind sin prefijo (ej. `orange`, `violet`, `red`).
    - `cover`: `cover-<game-id>`.
-   - Mecánica core, controles (solo teclado — mismo criterio que los 4 juegos reales existentes), condición de victoria y de game over.
+   - Mecánica core, controles (solo teclado — mismo criterio que los 5 juegos reales existentes), condición de victoria y de game over.
 
-   **Puedes tomar un nombre del backlog (Glotón, Invasores, Ranaria, Duelo Pixel) como inspiración de tema** — el usuario puede pedir explícitamente "algo tipo Frogger/Ranaria" — pero el juego resultante debe divergir claramente del original: `game-id`/título distintos (nunca `ranaria`/`RANARIA` ni cualquier otro id ya usado en `games`), y al menos un cambio real de mecánica, no solo de skin visual (p. ej. cruces en direcciones no ortogonales, límite de tiempo por carril en vez de por partida, hazard que se mueve en vez de estático). Si el usuario pide explícitamente el port fiel de uno de esos cuatro (mismas reglas clásicas, mismo nombre), acláraselo en tu respuesta y sugiere `/add-game <id>` en su lugar — no lo bloquees, pero no lo tomes como un pedido de port literal salvo que lo diga sin ambigüedad.
+   **Puedes tomar un nombre del backlog restante (Glotón, Invasores, Duelo Pixel) como inspiración de tema** — el usuario puede pedir explícitamente "algo tipo Pac-Man/Glotón" — pero el juego resultante debe divergir claramente del original: `game-id`/título distintos (nunca un id ya usado en `games`), y al menos un cambio real de mecánica, no solo de skin visual (p. ej. cruces en direcciones no ortogonales, límite de tiempo por carril en vez de por partida, hazard que se mueve en vez de estático). Si el usuario pide explícitamente el port fiel de uno de esos tres (mismas reglas clásicas, mismo nombre), acláraselo en tu respuesta y sugiere `/add-game <id>` en su lugar — no lo bloquees, pero no lo tomes como un pedido de port literal salvo que lo diga sin ambigüedad.
 
 3. **Crea la carpeta** `specs/game-jam/<game-id>/` y escribe mínimo dos archivos:
    - `01-<game-id>-core.md` — spec principal: mecánica core completa + wiring a Supabase/registry, autocontenido e implementable por sí solo.

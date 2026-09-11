@@ -28,7 +28,7 @@ Lee, en este orden:
 
 Puedes recomendar:
 
-- **Un juego del backlog existente** (`gloton`, `invasores`, `ranaria`, `duelo-pixel`, o cualquier otro que aparezca sin motor en `games`) — ya tiene fila en la DB con categoría/color asignados.
+- **Un juego del backlog existente** (`gloton`, `invasores`, `duelo-pixel`, o cualquier otro que aparezca sin motor en `games`) — ya tiene fila en la DB con categoría/color asignados.
 - **Un concepto de juego totalmente nuevo**, que no existe aún en la tabla `games` — solo si justificas explícitamente por qué encaja mejor con la plataforma en este momento que cualquier ítem del backlog. Deja claro que un concepto nuevo requeriría además insertar una fila nueva en `games` (fuera de tu alcance: solo lo mencionas, no lo haces).
 
 Por defecto, prefiere el backlog existente (menor esfuerzo, categoría ya definida) salvo que tengas una razón de peso para proponer algo nuevo.

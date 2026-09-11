@@ -1,6 +1,6 @@
 ---
 name: add-game
-description: Genera un spec (mismo formato que specs/05 y 06) para portar o crear el motor real de un juego del Vault e integrarlo al leaderboard de Supabase. Úsalo antes de portar/crear el motor real de CAÍDA, BLOQUE BUSTER, SERPENTINA, GLOTÓN, INVASORES, RANARIA o DUELO PIXEL (ASTEROIDS ya está implementado, SPEC 05).
+description: Genera un spec (mismo formato que specs/05 y 06) para portar o crear el motor real de un juego del Vault e integrarlo al leaderboard de Supabase. Úsalo antes de portar/crear el motor real de GLOTÓN, INVASORES o DUELO PIXEL (ASTEROIDS, TETRIS, ARKANOID, SNAKE y FROGGER ya están implementados).
 disable-model-invocation: true
 argument-hint: "<game-id o nombre del juego>"
 allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(ls:*), Bash(cat:*), Bash(date:*)
@@ -63,16 +63,16 @@ Este skill **solo escribe el spec** (`specs/NN-slug.md`). Nunca implementa códi
 
 5. **Tabla id → referencia** (verifícala contra el `ls` real de la sesión de arriba antes de confiar en ella — puede quedar desactualizada a medida que se portan juegos):
 
-   | id              | título        | cat     | carpeta de referencia                                                                                    |
-   | --------------- | ------------- | ------- | -------------------------------------------------------------------------------------------------------- |
-   | `asteroids`     | ASTEROIDS     | SHOOTER | `02-asteroids` (ya portado, SPEC 05)                                                                     |
-   | `caida`         | CAÍDA         | PUZZLE  | `03-tetris`                                                                                              |
-   | `bloque-buster` | BLOQUE BUSTER | ARCADE  | `04-arkanoid` (multi-archivo: `game.js` + `levels.js` + assets reales de sprite/audio)                   |
-   | `serpentina`    | SERPENTINA    | ARCADE  | `05-snake` (solo trae `sprites.js` + `fruits.png`, un atlas de sprites de frutas — **no hay `game.js`**) |
-   | `gloton`        | GLOTÓN        | ARCADE  | ninguna                                                                                                  |
-   | `invasores`     | INVASORES     | SHOOTER | ninguna                                                                                                  |
-   | `ranaria`       | RANARIA       | ARCADE  | ninguna                                                                                                  |
-   | `duelo-pixel`   | DUELO PIXEL   | VERSUS  | ninguna                                                                                                  |
+   | id                         | título      | cat     | carpeta de referencia                                                                         |
+   | -------------------------- | ----------- | ------- | --------------------------------------------------------------------------------------------- |
+   | `asteroids`                | ASTEROIDS   | SHOOTER | `02-asteroids` (ya portado, SPEC 05)                                                          |
+   | `caida`/`tetris`           | TETRIS      | PUZZLE  | `03-tetris` (ya portado, renombrado CAÍDA→TETRIS, SPEC 07)                                    |
+   | `bloque-buster`/`arkanoid` | ARKANOID    | ARCADE  | `04-arkanoid` (ya portado, renombrado BLOQUE BUSTER→ARKANOID, SPEC 08)                        |
+   | `serpentina`/`snake`       | SNAKE       | ARCADE  | `05-snake` (ya portado, renombrado SERPENTINA→SNAKE, SPEC 09)                                 |
+   | `gloton`                   | GLOTÓN      | ARCADE  | ninguna                                                                                       |
+   | `invasores`                | INVASORES   | SHOOTER | ninguna                                                                                       |
+   | `ranaria`/`frogger`        | FROGGER     | ARCADE  | ninguna (ya portado, renombrado RANARIA→FROGGER, `specs/game-jam/frogger/01-frogger-core.md`) |
+   | `duelo-pixel`              | DUELO PIXEL | VERSUS  | ninguna                                                                                       |
 
    Un juego con carpeta ya existente en `lib/games/<id>/` (ver session context) ya está portado — avisa antes de generar un spec duplicado.
 
@@ -81,7 +81,7 @@ Este skill **solo escribe el spec** (`specs/NN-slug.md`). Nunca implementa códi
    - **Estado de "victoria" distinto de "game over"** (p. ej. BLOQUE BUSTER/Arkanoid al limpiar los 5 niveles predefinidos): el contrato solo tiene `onGameOver(finalScore)`, sin un evento de "victoria" separado. Decide si ganar también dispara `onGameOver` (con la puntuación final) y documenta la razón.
    - **Precarga asíncrona de assets** (sprites/audio, p. ej. Arkanoid con `spritesheet-breakout.png` y sonidos `.mp3`): la factory `GameFactory` es síncrona. Decide si los assets se precargan antes de llamar a `createXxxGame`, o si la factory arranca con una bandera de "cargando" internamente y empieza a dibujar/actualizar recién cuando resuelven; documenta cuál y por qué.
    - **Controles originales por mouse/clicks en canvas** (p. ej. la pala de Arkanoid movida con el mouse y un menú de pausa/selección de nivel clickeable dibujado en el propio canvas): decide si se mantienen o se convierten a solo teclado, consistente con el precedente de ASTEROIDS (flechas + espacio, con `preventDefault` en esos códigos mientras el motor está montado).
-   - **Sin ninguna referencia de lógica jugable** (SERPENTINA solo trae el atlas de sprites de frutas; GLOTÓN/INVASORES/RANARIA/DUELO PIXEL no tienen ninguna carpeta de referencia): el spec debe decir explícitamente que la mecánica se diseña desde cero siguiendo las reglas clásicas del género (Snake/Pac-Man/Space Invaders/Frogger/Pong respectivamente), y notar qué assets reutilizables existen (p. ej. `references/started-games/05-snake/sprites.js` + `fruits.png` para las frutas de SERPENTINA).
+   - **Sin ninguna referencia de lógica jugable** (SERPENTINA solo traía el atlas de sprites de frutas; hoy GLOTÓN/INVASORES/DUELO PIXEL —el backlog restante— no tienen ninguna carpeta de referencia, mismo caso que tuvo RANARIA/FROGGER antes de portarse): el spec debe decir explícitamente que la mecánica se diseña desde cero siguiendo las reglas clásicas del género (Pac-Man/Space Invaders/Pong respectivamente), y notar qué assets reutilizables existen (p. ej. `references/started-games/05-snake/sprites.js` + `fruits.png` para las frutas de SERPENTINA/SNAKE).
 
 ## Fases
 

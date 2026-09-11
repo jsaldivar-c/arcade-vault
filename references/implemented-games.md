@@ -30,6 +30,13 @@ Datos obtenidos de la tabla `games` en Supabase, filtrados a los juegos que tien
 - **Resumen:** Crece sin morder tu propia cola.
 - **Descripción:** Una serpiente de luz recorre la grilla buscando núcleos magenta. Cada bocado la alarga y la hace más veloz. Un movimiento en falso y se devora a sí misma.
 
+## FROGGER
+
+- **Categoría:** ARCADE
+- **Color:** green
+- **Resumen:** Cruza el tráfico y el río sin perder ninguna vida.
+- **Descripción:** Saltos discretos sobre una cuadrícula: esquiva carriles de tráfico y cruza el río sobre troncos y tortugas para llegar a las 5 metas. Renombrado desde `ranaria`, spec en `specs/game-jam/frogger/01-frogger-core.md`.
+
 ---
 
-**No implementados aún** (existen en la tabla `games` pero sin motor/canvas): `gloton`, `invasores`, `ranaria`, `duelo-pixel`.
+**No implementados aún** (existen en la tabla `games` pero sin motor/canvas): `gloton`, `invasores`, `duelo-pixel`.

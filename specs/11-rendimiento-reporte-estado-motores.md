@@ -1,6 +1,6 @@
 # SPEC 11 — Rendimiento: reporte de estado sin re-render innecesario en los motores de juego
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05, SPEC 07, SPEC 08, SPEC 09, `specs/game-jam/frogger/01-frogger-core.md`
 > **Date:** 2026-09-10
 > **Objective:** Eliminar el re-render de React en cada frame (60/s) que hoy sufren ASTEROIDS, TETRIS, ARKANOID y SNAKE al llamar `callbacks.onStateChange` incondicionalmente en el loop, introduciendo un helper compartido `createStateReporter` en `lib/games/engine.ts` que solo invoca el callback cuando `score`/`lives`/`level` cambian de verdad — el mismo criterio que FROGGER ya implementa correctamente hoy.

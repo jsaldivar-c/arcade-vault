@@ -1,4 +1,8 @@
-import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import {
+  createStateReporter,
+  type GameCallbacks,
+  type GameHandle,
+} from "@/lib/games/engine";
 import { getSkin } from "@/lib/games/skins";
 import { SNAKE_PALETTES } from "@/lib/games/snake/skins";
 
@@ -112,6 +116,8 @@ export function createSnakeGame(
   let destroyed = false;
   let lastTime: number | null = null;
   let rafId = 0;
+
+  const reportState = createStateReporter(callbacks.onStateChange);
 
   function resetSnake() {
     const startY = Math.floor(ROWS / 2);
@@ -237,7 +243,7 @@ export function createSnakeGame(
 
     if (paused || state !== "playing") {
       lastTime = ts;
-      callbacks.onStateChange({ score, lives: 1, level });
+      reportState({ score, lives: 1, level });
       rafId = requestAnimationFrame(loop);
       return;
     }
@@ -252,7 +258,7 @@ export function createSnakeGame(
     }
 
     draw();
-    callbacks.onStateChange({ score, lives: 1, level });
+    reportState({ score, lives: 1, level });
     rafId = requestAnimationFrame(loop);
   }
 

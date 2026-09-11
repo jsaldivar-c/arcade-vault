@@ -1,4 +1,8 @@
-import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import {
+  createStateReporter,
+  type GameCallbacks,
+  type GameHandle,
+} from "@/lib/games/engine";
 import { getSkin } from "@/lib/games/skins";
 import { FROGGER_PALETTES } from "@/lib/games/frogger/skins";
 
@@ -177,9 +181,7 @@ export function createFroggerGame(
   let lastTime: number | null = null;
   let rafId = 0;
 
-  let lastReportedScore = -1;
-  let lastReportedLives = -1;
-  let lastReportedLevel = -1;
+  const reportState = createStateReporter(callbacks.onStateChange);
 
   let pendingDirection: Direction | null = null;
 
@@ -234,9 +236,6 @@ export function createFroggerGame(
     state = "playing";
     gameOverFired = false;
     elapsedMs = 0;
-    lastReportedScore = -1;
-    lastReportedLives = -1;
-    lastReportedLevel = -1;
     lanes = buildLanes(level);
     goals = new Array(GOAL_COUNT).fill(false);
     resetRound();
@@ -249,28 +248,12 @@ export function createFroggerGame(
     resetRound();
   }
 
-  function reportState() {
-    if (
-      score !== lastReportedScore ||
-      lives !== lastReportedLives ||
-      level !== lastReportedLevel
-    ) {
-      lastReportedScore = score;
-      lastReportedLives = lives;
-      lastReportedLevel = level;
-      callbacks.onStateChange({ score, lives, level });
-    }
-  }
-
   function killFrog() {
     if (state !== "playing") return;
     lives = Math.max(0, lives - 1);
     if (lives === 0) {
       state = "gameover";
-      callbacks.onStateChange({ score, lives: 0, level });
-      lastReportedScore = score;
-      lastReportedLives = 0;
-      lastReportedLevel = level;
+      reportState({ score, lives: 0, level });
       if (!gameOverFired) {
         gameOverFired = true;
         callbacks.onGameOver(score);
@@ -427,7 +410,7 @@ export function createFroggerGame(
       }
     }
 
-    reportState();
+    reportState({ score, lives, level });
   }
 
   // ── Dibujo ────────────────────────────────────────────────────────────────

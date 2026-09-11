@@ -1,4 +1,8 @@
-import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import {
+  createStateReporter,
+  type GameCallbacks,
+  type GameHandle,
+} from "@/lib/games/engine";
 
 const W = 800;
 const H = 600;
@@ -120,6 +124,8 @@ export function createTetrisGame(
   let destroyed = false;
   let lastTime: number | null = null;
   let rafId = 0;
+
+  const reportState = createStateReporter(callbacks.onStateChange);
 
   function createBoard(): number[][] {
     return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -400,7 +406,7 @@ export function createTetrisGame(
 
     if (paused || gameOver) {
       lastTime = ts;
-      callbacks.onStateChange({ score, lives: 1, level });
+      reportState({ score, lives: 1, level });
       rafId = requestAnimationFrame(loop);
       return;
     }
@@ -418,7 +424,7 @@ export function createTetrisGame(
     }
 
     draw();
-    callbacks.onStateChange({ score, lives: 1, level });
+    reportState({ score, lives: 1, level });
     rafId = requestAnimationFrame(loop);
   }
 

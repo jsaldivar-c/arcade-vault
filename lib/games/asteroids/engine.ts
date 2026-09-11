@@ -1,4 +1,8 @@
-import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import {
+  createStateReporter,
+  type GameCallbacks,
+  type GameHandle,
+} from "@/lib/games/engine";
 import { getSkin } from "@/lib/games/skins";
 import { ASTEROIDS_PALETTES } from "@/lib/games/asteroids/skins";
 
@@ -47,6 +51,8 @@ export function createAsteroidsGame(
   // ── Input (encapsulado por instancia) ────────────────────────────────────
   const keys: Record<string, boolean> = {};
   const justPressed: Record<string, boolean> = {};
+
+  const reportState = createStateReporter(callbacks.onStateChange);
 
   function handleKeyDown(e: KeyboardEvent) {
     if (PREVENT_DEFAULT_CODES.has(e.code)) e.preventDefault();
@@ -467,7 +473,7 @@ export function createAsteroidsGame(
     if (state === "gameover") {
       particles.forEach((p) => p.update(dt));
       particles = particles.filter((p) => !p.dead);
-      callbacks.onStateChange({ score, lives, level });
+      reportState({ score, lives, level });
       return;
     }
 
@@ -480,7 +486,7 @@ export function createAsteroidsGame(
         state = "playing";
         ship.reset();
       }
-      callbacks.onStateChange({ score, lives, level });
+      reportState({ score, lives, level });
       return;
     }
 
@@ -543,7 +549,7 @@ export function createAsteroidsGame(
     // Nivel completado
     if (asteroids.length === 0) nextLevel();
 
-    callbacks.onStateChange({ score, lives, level });
+    reportState({ score, lives, level });
   }
 
   // ── Draw ──────────────────────────────────────────────────────────────────

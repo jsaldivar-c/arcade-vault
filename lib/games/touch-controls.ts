@@ -58,4 +58,13 @@ export const TOUCH_LAYOUTS: Record<string, TouchLayoutConfig> = {
     },
     actions: [],
   },
+  frogger: {
+    dpad: {
+      up: { code: "ArrowUp", label: "▲" },
+      down: { code: "ArrowDown", label: "▼" },
+      left: { code: "ArrowLeft", label: "◄" },
+      right: { code: "ArrowRight", label: "►" },
+    },
+    actions: [],
+  },
 };

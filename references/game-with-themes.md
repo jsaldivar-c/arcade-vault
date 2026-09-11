@@ -5,6 +5,13 @@
 
 Las entradas se agregan aquí solo cuando el usuario invoca a `skin-designer` explícitamente sobre un juego.
 
+## frogger (FROGGER)
+
+- **Estado:** completo
+- **Última actualización:** 2026-09-10
+- **Archivos:** `lib/games/skins.ts`, `lib/games/frogger/skins.ts`, `lib/games/frogger/engine.ts`, `components/games/frogger-canvas.tsx`
+- **Notas:** frogger tiene muchos más colores de gameplay que el resto de los juegos portados (fondos de zona, meta, autos/camiones/ruedas, troncos/veteado, tortugas/caparazón/sumergida, rana/ojos), todos movidos a `FroggerPalette`. clasico es la paleta original sin cambios. neon usa los custom properties de `app/globals.css` (`--cyan`/`--magenta`/`--yellow`/`--green`, hardcodeados como hex) con `shadowBlur`/`shadowColor` real en rana, vehículos, troncos, tortugas visibles y el borde de las metas; los 3 fondos de zona se oscurecen con tinte violeta/verde en vez del negro/azul/verde de clasico, para diferenciarse sin perder legibilidad. retro usa fósforo verde + ámbar CRT (siempre vivo sobre negro), sin glow — plano, mismo criterio que asteroids/snake/arkanoid. El HUD interno del canvas (fondo, texto, semáforo verde/ámbar/rojo del temporizador) queda **fuera** de las 3 paletas a propósito y documentado como comentario en `engine.ts`: es un indicador de estado (no arte) que duplica la misma info que el HUD de React fuera del canvas. Los iconos de vida del HUD interno sí siguen el color `frog` de la paleta activa (son siluetas de la rana, no parte del indicador de estado). Desviación de patrón estándar (heredada de asteroids/snake/arkanoid): el `useEffect` que monta/destruye el motor en `frogger-canvas.tsx` depende de `[restartKey, skinVersion]` en vez de solo `restartKey`, porque el motor resuelve la paleta una sola vez al crearse. Esta corrida se ejecutó siguiendo las instrucciones de `.claude/agents/skin-designer.md` directamente en la conversación principal (no como subagente aislado) porque el subagente `skin-designer` no aparecía disponible vía el Agent tool en esta sesión (mismo problema con `mobile-porter`, ya reportado como bug de producto).
+
 ## asteroids (ASTEROIDS)
 
 - **Estado:** completo

@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createSnakeGame } from "@/lib/games/snake/engine";
+import { createFroggerGame } from "@/lib/games/frogger/engine";
 import type { GameHandle } from "@/lib/games/engine";
 import { getSkin, setSkin, type SkinId } from "@/lib/games/skins";
-
-const SPRITESHEET_URL = "/games/snake/fruits.png";
 
 const SKIN_OPTIONS: { id: SkinId; label: string }[] = [
   { id: "clasico", label: "CLÁSICO" },
@@ -13,7 +11,7 @@ const SKIN_OPTIONS: { id: SkinId; label: string }[] = [
   { id: "retro", label: "RETRO" },
 ];
 
-export function SnakeCanvas({
+export function FroggerCanvas({
   paused,
   restartKey,
   onStateChange,
@@ -30,11 +28,10 @@ export function SnakeCanvas({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const handleRef = useRef<GameHandle | null>(null);
-  const pausedRef = useRef(paused);
-  const [skin, setSkinState] = useState<SkinId>(() => getSkin("snake"));
+  const [skin, setSkinState] = useState<SkinId>(() => getSkin("frogger"));
   // Se incrementa cada vez que el jugador cambia de skin. El motor resuelve
-  // su paleta una sola vez al crearse (createSnakeGame -> getSkin), así que
-  // un cambio de skin necesita forzar el remount completo del efecto de
+  // su paleta una sola vez al crearse (createFroggerGame -> getSkin), así
+  // que un cambio de skin necesita forzar el remount completo del efecto de
   // abajo — de ahí que este contador, y no solo restartKey, esté en sus deps.
   const [skinVersion, setSkinVersion] = useState(0);
 
@@ -42,32 +39,23 @@ export function SnakeCanvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let stale = false;
-    const image = new Image();
-    image.onload = () => {
-      if (stale) return;
-      const handle = createSnakeGame(canvas, { onStateChange, onGameOver });
-      handle.setPaused(pausedRef.current);
-      handleRef.current = handle;
-    };
-    image.src = SPRITESHEET_URL;
+    const handle = createFroggerGame(canvas, { onStateChange, onGameOver });
+    handleRef.current = handle;
 
     return () => {
-      stale = true;
-      handleRef.current?.destroy();
+      handle.destroy();
       handleRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restartKey, skinVersion]);
 
   useEffect(() => {
-    pausedRef.current = paused;
     handleRef.current?.setPaused(paused);
   }, [paused]);
 
   const handleSkinChange = (next: SkinId) => {
     if (next === skin) return;
-    setSkin("snake", next);
+    setSkin("frogger", next);
     setSkinState(next);
     setSkinVersion((v) => v + 1);
   };

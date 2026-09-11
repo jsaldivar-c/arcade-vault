@@ -88,7 +88,12 @@ export function AsteroidsCanvas({
             key={opt.id}
             type="button"
             className={`chip${skin === opt.id ? " active" : ""}`}
-            style={{ padding: "6px 8px", fontSize: 8 }}
+            style={{
+              padding: "6px 8px",
+              fontSize: 8,
+              minWidth: 44,
+              minHeight: 44,
+            }}
             onClick={() => handleSkinChange(opt.id)}
           >
             {opt.label}

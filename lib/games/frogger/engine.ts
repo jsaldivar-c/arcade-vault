@@ -1,4 +1,6 @@
 import type { GameCallbacks, GameHandle } from "@/lib/games/engine";
+import { getSkin } from "@/lib/games/skins";
+import { FROGGER_PALETTES } from "@/lib/games/frogger/skins";
 
 const COLS = 20;
 const ROWS = 15;
@@ -48,23 +50,9 @@ const DIRECTION_CODES: Record<string, Direction> = {
   ArrowRight: "right",
 };
 
-// ── Paleta de colores (por defecto — skin-designer la reemplaza más tarde) ─
-const COLOR_BG_ROAD = "#000000";
-const COLOR_BG_RIVER = "#0a1a4a";
-const COLOR_BG_SAFE = "#123a1f";
-const COLOR_GOAL_BG = "#3ddc63";
-const COLOR_GOAL_BORDER = "#e8c33d";
-const COLOR_GOAL_FROG = "#1c7a3a";
-const COLOR_CAR = "#3498db";
-const COLOR_TRUCK = "#c0392b";
-const COLOR_WHEEL = "#1a1a1a";
-const COLOR_LOG = "#7b4a20";
-const COLOR_LOG_GRAIN = "rgba(0,0,0,0.35)";
-const COLOR_TURTLE = "#2e8b3d";
-const COLOR_TURTLE_SHELL = "#1c5c27";
-const COLOR_TURTLE_SUBMERGED = "rgba(255,255,255,0.25)";
-const COLOR_FROG = "#39ff6a";
-const COLOR_FROG_EYE = "#0a2e12";
+// ── Paleta de colores del HUD interno del canvas ────────────────────────
+// Fija en las 3 skins a propósito (ver comentario en lib/games/frogger/skins.ts):
+// es un indicador de estado, no un elemento de arte de gameplay.
 const COLOR_HUD_BG = "rgba(0,0,0,0.55)";
 const COLOR_HUD_TEXT = "#ffffff";
 const COLOR_TIMER_TRACK = "rgba(255,255,255,0.15)";
@@ -165,6 +153,11 @@ export function createFroggerGame(
   const ctx = maybeCtx;
   canvas.width = CANVAS_W;
   canvas.height = CANVAS_H;
+
+  // Paleta de colores de la skin activa, resuelta una sola vez al crear esta
+  // instancia del motor (el canvas fuerza un remount completo al cambiar de
+  // skin, ver components/games/frogger-canvas.tsx).
+  const palette = FROGGER_PALETTES[getSkin("frogger")];
 
   // ── Estado del juego (encapsulado por instancia) ─────────────────────────
   let lanes: Lane[] = [];
@@ -445,10 +438,10 @@ export function createFroggerGame(
       const isRoad = r >= ROW_ROAD_TOP && r <= ROW_ROAD_BOT;
       // Filas seguras: metas, zona intermedia y base de inicio.
       const isSafe = r === ROW_GOALS || r === ROW_SAFE_MID || r === ROW_START;
-      let color: string = COLOR_BG_SAFE;
-      if (isRiver) color = COLOR_BG_RIVER;
-      else if (isRoad) color = COLOR_BG_ROAD;
-      else if (isSafe) color = COLOR_BG_SAFE;
+      let color: string = palette.bgSafe;
+      if (isRiver) color = palette.bgRiver;
+      else if (isRoad) color = palette.bgRoad;
+      else if (isSafe) color = palette.bgSafe;
       ctx.fillStyle = color;
       ctx.fillRect(0, y, CANVAS_W, CELL);
     }
@@ -460,13 +453,18 @@ export function createFroggerGame(
       const startCol = 2 + i * 4;
       const x = startCol * CELL;
       const w = GOAL_WIDTH * CELL;
-      ctx.fillStyle = COLOR_GOAL_BG;
+      ctx.fillStyle = palette.goalBg;
       ctx.fillRect(x, y, w, CELL);
-      ctx.strokeStyle = COLOR_GOAL_BORDER;
+      ctx.strokeStyle = palette.goalBorder;
       ctx.lineWidth = 3;
+      if (palette.glow) {
+        ctx.shadowColor = palette.goalBorder;
+        ctx.shadowBlur = 8;
+      }
       ctx.strokeRect(x + 1.5, y + 1.5, w - 3, CELL - 3);
+      ctx.shadowBlur = 0;
       if (goals[i]) {
-        ctx.fillStyle = COLOR_GOAL_FROG;
+        ctx.fillStyle = palette.goalFrog;
         ctx.beginPath();
         ctx.ellipse(
           x + w / 2,
@@ -485,9 +483,14 @@ export function createFroggerGame(
   function drawVehicle(x: number, y: number, w: number, type: string) {
     const h = CELL - 10;
     const top = y + 5;
-    ctx.fillStyle = type === "truck" ? COLOR_TRUCK : COLOR_CAR;
+    ctx.fillStyle = type === "truck" ? palette.truck : palette.car;
+    if (palette.glow) {
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 8;
+    }
     ctx.fillRect(x + 2, top, w - 4, h);
-    ctx.fillStyle = COLOR_WHEEL;
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = palette.wheel;
     const wheelR = 5;
     ctx.beginPath();
     ctx.arc(x + 10, top + h, wheelR, 0, Math.PI * 2);
@@ -498,9 +501,14 @@ export function createFroggerGame(
   function drawLog(x: number, y: number, w: number) {
     const h = CELL - 14;
     const top = y + 7;
-    ctx.fillStyle = COLOR_LOG;
+    ctx.fillStyle = palette.log;
+    if (palette.glow) {
+      ctx.shadowColor = palette.log;
+      ctx.shadowBlur = 8;
+    }
     ctx.fillRect(x + 1, top, w - 2, h);
-    ctx.strokeStyle = COLOR_LOG_GRAIN;
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = palette.logGrain;
     ctx.lineWidth = 1;
     for (let lx = x + 8; lx < x + w - 4; lx += 10) {
       ctx.beginPath();
@@ -521,17 +529,22 @@ export function createFroggerGame(
       const cx = x + i * CELL + CELL / 2;
       const cy = y + CELL / 2;
       if (submerged) {
-        ctx.strokeStyle = COLOR_TURTLE_SUBMERGED;
+        ctx.strokeStyle = palette.turtleSubmerged;
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.stroke();
       } else {
-        ctx.fillStyle = COLOR_TURTLE;
+        ctx.fillStyle = palette.turtle;
+        if (palette.glow) {
+          ctx.shadowColor = palette.turtle;
+          ctx.shadowBlur = 8;
+        }
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = COLOR_TURTLE_SHELL;
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = palette.turtleShell;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
@@ -573,8 +586,13 @@ export function createFroggerGame(
     ctx.save();
     ctx.translate(cx, cy - jumpLift);
 
+    if (palette.glow) {
+      ctx.shadowColor = palette.frog;
+      ctx.shadowBlur = 10;
+    }
+
     if (frog.animating) {
-      ctx.strokeStyle = COLOR_FROG;
+      ctx.strokeStyle = palette.frog;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(-CELL * 0.3, -CELL * 0.1);
@@ -584,12 +602,13 @@ export function createFroggerGame(
       ctx.stroke();
     }
 
-    ctx.fillStyle = COLOR_FROG;
+    ctx.fillStyle = palette.frog;
     ctx.beginPath();
     ctx.ellipse(0, 0, CELL * 0.34, CELL * 0.28, 0, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0;
 
-    ctx.fillStyle = COLOR_FROG_EYE;
+    ctx.fillStyle = palette.frogEye;
     ctx.beginPath();
     ctx.arc(-CELL * 0.12, -CELL * 0.12, 3, 0, Math.PI * 2);
     ctx.arc(CELL * 0.12, -CELL * 0.12, 3, 0, Math.PI * 2);
@@ -617,7 +636,7 @@ export function createFroggerGame(
     const iconSize = 12;
     for (let i = 0; i < lives; i++) {
       const fx = CANVAS_W - 10 - i * (iconSize + 4);
-      ctx.fillStyle = COLOR_FROG;
+      ctx.fillStyle = palette.frog;
       ctx.beginPath();
       ctx.ellipse(fx, 13, iconSize * 0.4, iconSize * 0.32, 0, 0, Math.PI * 2);
       ctx.fill();

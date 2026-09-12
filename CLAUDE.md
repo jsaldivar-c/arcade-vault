@@ -86,6 +86,7 @@ All are manual invocation only (`Agent` tool) — never dispatch any of them pro
 - `skin-designer` (`.claude/agents/skin-designer.md`): implements the 3 mandatory color skins (`neon`/`retro`/`clasico`) for the game(s) named explicitly in its prompt. Run automatically by `/spec-impl-game` as the first half of its post-implementation chain.
 - `mobile-porter` (`.claude/agents/mobile-porter.md`): audits and fixes the app's mobile/responsive experience across the whole app. Run automatically by `/spec-impl-game` as the second half of its post-implementation chain.
 - `game-performance-booster` (`.claude/agents/game-performance-booster.md`): audits and fixes performance issues in the engine of the game(s) named explicitly in its prompt.
+- `security-auditor` (`.claude/agents/security-auditor.md`): audits security on two fronts — Supabase database (RLS, advisors, `SECURITY DEFINER` functions/grants, migrations, read-only) and application code (Next.js headers, `app/api/*` routes, session/auth handling, hardcoded secrets, dependencies). Fixes low-risk reversible application-code findings directly; never applies DB migrations itself — proposes exact SQL and routes schema/RLS/grant changes through `/spec` + `/spec-impl`, same pattern as SPEC 13. Maintains `references/security/security-checklist.md` as living memory.
 
 ## Hooks
 

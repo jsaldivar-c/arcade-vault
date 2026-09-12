@@ -10,7 +10,7 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useSession();
+  const { user, profile, logout } = useSession();
 
   // Misma condición que usa GamePlayer para mostrar el gamepad táctil
   // (juego con motor real + pantalla de jugar) — en esos casos el nav se
@@ -30,8 +30,8 @@ export function Nav() {
 
   const close = () => setOpen(false);
 
-  const handleSignOut = () => {
-    logout();
+  const handleSignOut = async () => {
+    await logout();
     close();
   };
 
@@ -70,7 +70,7 @@ export function Nav() {
         </div>
         {user ? (
           <button className="btn ghost auth-btn" onClick={handleSignOut}>
-            {user.name} ▾
+            {profile?.username} ▾
           </button>
         ) : (
           <button className="btn auth-btn" onClick={() => router.push("/auth")}>

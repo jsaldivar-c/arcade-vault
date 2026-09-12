@@ -10,7 +10,7 @@ import { TouchControls } from "@/components/games/touch-controls";
 
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
-  const { user } = useSession();
+  const { profile } = useSession();
   const EngineCanvas = GAME_CANVAS_REGISTRY[game.id];
   const hasRealEngine = Boolean(EngineCanvas);
 
@@ -18,7 +18,7 @@ export function GamePlayer({ game }: { game: Game }) {
   const [lives] = useState(3);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState(user?.name ?? "INVITADO");
+  const [name, setName] = useState(profile?.username ?? "INVITADO");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -30,11 +30,13 @@ export function GamePlayer({ game }: { game: Game }) {
   });
 
   // Sincroniza el nombre editable con la sesión la primera vez que se resuelve
-  // (hidratación de localStorage), sin pisar lo que el jugador ya haya escrito.
-  const [syncedUserName, setSyncedUserName] = useState(user?.name ?? null);
-  if ((user?.name ?? null) !== syncedUserName) {
-    setSyncedUserName(user?.name ?? null);
-    setName(user?.name ?? "INVITADO");
+  // (carga async de Supabase), sin pisar lo que el jugador ya haya escrito.
+  const [syncedUserName, setSyncedUserName] = useState(
+    profile?.username ?? null,
+  );
+  if ((profile?.username ?? null) !== syncedUserName) {
+    setSyncedUserName(profile?.username ?? null);
+    setName(profile?.username ?? "INVITADO");
   }
 
   const level = Math.floor(score / 2500) + 1;

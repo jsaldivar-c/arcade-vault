@@ -11,7 +11,7 @@ interface Entry {
 }
 
 export function HallOfFame({ entries }: { entries: Entry[] }) {
-  const { user } = useSession();
+  const { profile } = useSession();
   const [tab, setTab] = useState(entries[0].game.id);
 
   const active = useMemo(
@@ -21,12 +21,12 @@ export function HallOfFame({ entries }: { entries: Entry[] }) {
   const { game, scores: rows } = active;
 
   const yourBest = useMemo(() => {
-    if (!user) return null;
+    if (!profile) return null;
     return rows.reduce<ScoreRow | null>((best, r) => {
-      if (r.name.toLowerCase() !== user.name.toLowerCase()) return best;
+      if (r.name.toLowerCase() !== profile.username.toLowerCase()) return best;
       return !best || r.score > best.score ? r : best;
     }, null);
-  }, [rows, user]);
+  }, [rows, profile]);
 
   return (
     <div className="av-hall fade-in">

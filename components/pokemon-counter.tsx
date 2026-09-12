@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 const MIN_ID = 1;
 const MAX_ID = 1025;
+const ERROR_MESSAGE = "No se pudo cargar el Pokémon. Intenta de nuevo.";
 
 interface PokemonData {
   id: number;
@@ -28,18 +29,36 @@ interface PokeApiResponse {
 }
 
 interface FetchResult {
-  requestId: number;
-  data: PokemonData | null;
+  requestKey: string;
+  pokemon: PokemonData | null;
   error: string | null;
+}
+
+function toPokemonData(response: PokeApiResponse): PokemonData {
+  return {
+    id: response.id,
+    name: response.name,
+    sprite:
+      response.sprites.other["official-artwork"].front_default ??
+      response.sprites.front_default ??
+      "",
+    types: response.types.map((entry) => entry.type.name),
+  };
 }
 
 export function PokemonCounter() {
   const [count, setCount] = useState(MIN_ID);
-  const [retryKey, setRetryKey] = useState(0);
-  const [result, setResult] = useState<FetchResult | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const [fetched, setFetched] = useState<FetchResult | null>(null);
 
-  const requestId = count * 1000 + retryKey;
-  const loading = result?.requestId !== requestId;
+  // Every (count, attempt) pair is one request, and each result remembers the
+  // pair it came from: anything that doesn't match the current pair is stale,
+  // so a slow older response can never replace a newer one.
+  const requestKey = `${count}:${attempt}`;
+  const result = fetched?.requestKey === requestKey ? fetched : null;
+  const loading = result === null;
+  const pokemon = result?.pokemon ?? null;
+  const error = result?.error ?? null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -52,34 +71,20 @@ export function PokemonCounter() {
         return res.json() as Promise<PokeApiResponse>;
       })
       .then((data) => {
-        setResult({
-          requestId,
+        setFetched({
+          requestKey,
+          pokemon: toPokemonData(data),
           error: null,
-          data: {
-            id: data.id,
-            name: data.name,
-            sprite:
-              data.sprites.other["official-artwork"].front_default ??
-              data.sprites.front_default ??
-              "",
-            types: data.types.map((t) => t.type.name),
-          },
         });
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
-        setResult({
-          requestId,
-          data: null,
-          error: "No se pudo cargar el Pokémon. Intenta de nuevo.",
-        });
+        setFetched({ requestKey, pokemon: null, error: ERROR_MESSAGE });
       });
 
     return () => controller.abort();
-  }, [count, requestId]);
+  }, [count, requestKey]);
 
-  const pokemon = !loading ? (result?.data ?? null) : null;
-  const error = !loading ? (result?.error ?? null) : null;
   const atMin = count <= MIN_ID;
   const atMax = count >= MAX_ID;
 
@@ -127,19 +132,19 @@ export function PokemonCounter() {
           <p className="pixel neon-yellow flicker text-xs">CARGANDO...</p>
         )}
 
-        {!loading && error && (
+        {error && (
           <div className="flex flex-col items-center gap-3">
             <p className="pixel neon-magenta text-xs">{error}</p>
             <button
               className="btn ghost"
-              onClick={() => setRetryKey((k) => k + 1)}
+              onClick={() => setAttempt((a) => a + 1)}
             >
               REINTENTAR
             </button>
           </div>
         )}
 
-        {!loading && !error && pokemon && (
+        {pokemon && (
           <>
             <div className="relative h-48 w-48">
               {pokemon.sprite ? (
